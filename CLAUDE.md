@@ -86,7 +86,8 @@ docs/                     # PRD, BUILD_PLAN, MODERATION
 pnpm dev                 # Next dev server
 pnpm lint                # eslint
 pnpm typecheck           # tsc --noEmit
-pnpm test                # vitest run
+pnpm test                # vitest run (config: vitest.config.mts, setup: vitest.setup.ts)
+pnpm test:watch          # vitest watch mode
 pnpm test:e2e            # playwright test --trace off
 supabase start           # local Postgres/Auth/Storage (Docker)
 supabase db reset        # re-apply migrations + seed
@@ -114,6 +115,7 @@ supabase gen types typescript --local > src/lib/supabase/types.ts
 - Rate limits enforced in Postgres via triggers: 5 articles/day, 60 comments/day, 30 reports/day per user.
 - Staff actions (hide, restore, approve, reject, suspend, ban, role change, comment removal, lock comments, notes) always write a row to `moderation_actions` in the same transaction (SQL function).
 - Accessible by default: semantic HTML, labels on inputs, 44px tap targets, visible focus, respects dark mode.
+- Tests: mock `next/navigation` and `next-themes` with `vi.mock` + `vi.hoisted` (see `src/components/bottom-nav.test.tsx`); query by role/accessible name, not class names.
 - Each feature ships with tests: unit/component tests for logic and UI, a pgTAP test for any new policy, and a Playwright test for the main happy path.
 - Small PRs, one BUILD_PLAN step per PR. CI must be green before merge.
 
