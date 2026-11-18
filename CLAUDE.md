@@ -88,7 +88,7 @@ pnpm lint                # eslint
 pnpm typecheck           # tsc --noEmit
 pnpm test                # vitest run (config: vitest.config.mts, setup: vitest.setup.ts)
 pnpm test:watch          # vitest watch mode
-pnpm test:e2e            # playwright test --trace off
+pnpm test:e2e            # playwright test --trace off (mobile 375px + desktop projects; starts `pnpm dev` on :3100, or `pnpm start` in CI)
 pnpm db:start            # supabase start: local Postgres/Auth/Storage/Mailpit (Docker must be running)
 pnpm db:stop             # supabase stop
 pnpm db:reset            # re-apply migrations + seed
@@ -97,6 +97,12 @@ pnpm db:types            # regenerate src/lib/supabase/types.ts from the local D
 pnpm exec supabase ...   # any other Supabase CLI command (CLI is a pinned devDependency)
 ```
 Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailpit (catches auth emails) http://127.0.0.1:54324.
+
+## CI (`.github/workflows/ci.yml`)
+- `checks` job: lint, typecheck, unit tests.
+- `integration` job: starts local Supabase, fails if `src/lib/supabase/types.ts` is stale (run `pnpm db:types` and commit), runs pgTAP, builds, runs Playwright (report uploaded on failure).
+- Node 22 in CI. Local Node 20 still works, but Node 20 reached end-of-life in April 2026, so upgrade to 22 or 24 LTS.
+- Every e2e page check includes an axe accessibility scan in light and dark mode (`e2e/smoke.spec.ts`); new pages should be added to that list.
 
 ## Environment
 - `.env.local` (git-ignored; template in `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. Local values: `pnpm exec supabase status -o env`.

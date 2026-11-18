@@ -7,7 +7,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 1.2 shadcn/ui setup, base layout (masthead, footer with legal links, mobile bottom nav), dark mode, legal page stubs
 - [x] 1.3 Vitest + RTL config, first component test
 - [x] 1.4 Supabase CLI init, local stack, `src/lib/supabase/{server,client,middleware}.ts`, `middleware.ts`
-- [ ] 1.5 Playwright config + smoke test; GitHub Actions CI (lint, typecheck, unit, `supabase test db`, e2e)
+- [x] 1.5 Playwright config + smoke test; GitHub Actions CI (lint, typecheck, unit, `supabase test db`, e2e)
 - [ ] 1.6 Vercel project + Supabase cloud project linked; env vars documented in `.env.example`
 
 ## Phase 2 — Auth and profiles
