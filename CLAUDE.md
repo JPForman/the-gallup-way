@@ -89,11 +89,21 @@ pnpm typecheck           # tsc --noEmit
 pnpm test                # vitest run (config: vitest.config.mts, setup: vitest.setup.ts)
 pnpm test:watch          # vitest watch mode
 pnpm test:e2e            # playwright test --trace off
-supabase start           # local Postgres/Auth/Storage (Docker)
-supabase db reset        # re-apply migrations + seed
-supabase test db         # pgTAP RLS tests
-supabase gen types typescript --local > src/lib/supabase/types.ts
+pnpm db:start            # supabase start: local Postgres/Auth/Storage/Mailpit (Docker must be running)
+pnpm db:stop             # supabase stop
+pnpm db:reset            # re-apply migrations + seed
+pnpm db:test             # pgTAP RLS tests (supabase/tests/*.test.sql)
+pnpm db:types            # regenerate src/lib/supabase/types.ts from the local DB
+pnpm exec supabase ...   # any other Supabase CLI command (CLI is a pinned devDependency)
 ```
+Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailpit (catches auth emails) http://127.0.0.1:54324.
+
+## Environment
+- `.env.local` (git-ignored; template in `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. Local values: `pnpm exec supabase status -o env`.
+- Public env is validated by Zod in `src/lib/env.ts` (`getPublicEnv()`, lazy). In dev, middleware skips session refresh if Supabase isn't configured; in production a missing var throws.
+- Supabase clients: `src/lib/supabase/server.ts` (Server Components/Actions, `server-only`), `client.ts` (Client Components), `middleware.ts` (`updateSession`, called by `src/middleware.ts`; matcher skips static assets and `/legal/*` to save invocations).
+- Known harmless build warning: supabase-js references `process.version(s)` in the Edge runtime (guarded in the library).
+- pnpm only runs install scripts for packages in `package.json` → `pnpm.onlyBuiltDependencies` (currently `supabase`, which downloads the CLI binary).
 
 ## Domain rules
 - **Roles:** `user` (default), `moderator`, `admin` on `profiles.role`. "Contributor" is not a role: any verified, non-suspended user who accepts the Contributor Agreement can write.
