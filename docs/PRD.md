@@ -29,7 +29,7 @@ Adults (18+) living in or connected to Gallup: residents who want to know what's
 | Ban users, change roles, manage categories | | | | ✓ |
 | Edit another user's article | | | ✗ never | ✗ never |
 
-Suspended or unverified users have Visitor capabilities plus editing their own profile/settings and deleting their account.
+Suspended or unverified users have Visitor capabilities plus deleting their account. Suspended users cannot edit their profile, which stops banned spammers from rewriting their bios.
 
 ## 3. User stories (v1)
 **Reader**

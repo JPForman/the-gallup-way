@@ -100,6 +100,8 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 
 ## Repo and workflow
 - GitHub: https://github.com/JPForman/the-gallup-way (public; unlimited Actions minutes).
+- Supabase cloud project: ref `bhxfsxkczoonqrjhmoxx` (West US), API `https://bhxfsxkczoonqrjhmoxx.supabase.co`. The CLI is linked (`supabase/.temp/project-ref`, git-ignored). Push migrations with `pnpm exec supabase db push` only after the PR is merged to `main`.
+- Linking writes the cloud's service versions into `supabase/.temp/*-version` and `storage-migration`. If `pnpm db:start` fails after a (re)link, delete those files (keep `project-ref`), remove this project's Supabase containers and volumes, and start again.
 - Work on a `step-X.Y-…` branch, then PR to `main` once CI is green. Commits use the GitHub noreply email set in this repo's local git config. Never commit with a personal email.
 
 ## CI (`.github/workflows/ci.yml`)
@@ -118,7 +120,7 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 
 ## Domain rules
 - **Roles:** `user` (default), `moderator`, `admin` on `profiles.role`. "Contributor" is not a role: any verified, non-suspended user who accepts the Contributor Agreement can write.
-- **Suspension:** `profiles.suspended_until` (a far-future date = ban). Suspended or unverified users can read but not write anything (articles, comments, reactions, follows, reports).
+- **Suspension:** `profiles.suspended_until` (`'infinity'` = ban). Suspended or unverified users can read but not write anything (articles, comments, reactions, follows, reports, or their own profile). They can still delete their account.
 - **New-contributor review:** an author with fewer than 3 approved articles (`profiles.approved_article_count < 3`) submits to `pending_review`; staff approve or reject. After that, publishing goes straight to `published`. Enforced in the DB (`can_publish_directly()`), not only the UI.
 - **Article status:** `draft | pending_review | published | hidden | archived`, plus `deleted_at` for soft delete. Only `published` and not-deleted articles are visible to non-staff (authors also see their own).
 - **Revisions:** any update to an article after it has been published snapshots the previous title/dek/body into `article_revisions` (trigger). Staff can view them.
@@ -129,7 +131,10 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 ## Coding rules
 - TypeScript strict, no `any`. Generated DB types in `src/lib/supabase/types.ts`; regenerate after every migration.
 - **Security lives in the database.** Every table has RLS enabled with explicit policies. UI checks are convenience only. Never use the service-role key in code that runs per user request, except the self-service account-deletion route (which must verify the caller is deleting themselves). Otherwise service role is only for admin scripts and CI.
-- Use SQL helpers `public.is_staff()`, `public.is_admin()`, `public.is_suspended()`, `public.can_publish_directly()` in policies. A user can never change their own `role`, `suspended_until` or `approved_article_count` (trigger).
+- Use SQL helpers in policies (all `security definer`, `set search_path = ''`): `public.is_staff()`, `public.is_admin()`, `public.is_suspended()`, `public.can_write()` (signed in and not suspended), `public.can_publish_directly()` (≥ 3 approved stories, or staff), `public.current_role_name()`, `public.is_valid_handle(text)`.
+- Clients can never change `profiles.role`, `suspended_until`, `approved_article_count`, `id` or `created_at`: trigger `guard_profile_update` raises 42501 when `current_user` is `anon`/`authenticated`. Staff actions that change these must be `security definer` SQL functions (they run as the owner, pass the guard, and write `moderation_actions`), never direct client updates.
+- Profiles are created only by the `on_auth_user_created` trigger from sign-up metadata (`handle`, `display_name`). An invalid or taken handle falls back to `user_<id>`, so sign-up never fails in the DB; the app validates and checks availability first.
+- pgTAP tests simulate users with `set local role authenticated; set local request.jwt.claims to '{"sub":"<uuid>","role":"authenticated"}';` and create fixtures by inserting into `auth.users` (see `supabase/tests/010_profiles.test.sql`).
 - Schema changes only via new files in `supabase/migrations/`. Never edit an applied migration.
 - **User content is never raw HTML.** Article bodies are Tiptap JSON rendered to React by `src/lib/richtext` using an allowlist of node/mark types (paragraph, heading 2–3, bold, italic, link, bullet/ordered list, blockquote). Links get `rel="nofollow ugc noopener"` and only `http(s):` URLs. Comments and bios are plain text. Never `dangerouslySetInnerHTML` user input.
 - Every mutation: Zod validation → auth check → DB call → `revalidatePath` / `revalidateTag`.

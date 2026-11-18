@@ -10,11 +10,12 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 1.5 Playwright config + smoke test; GitHub Actions CI (lint, typecheck, unit, `supabase test db`, e2e)
 - [ ] 1.6 Vercel project + Supabase cloud project linked; env vars documented in `.env.example`
   - [x] GitHub repo created (public) and pushed
-  - [ ] Supabase cloud project created (operator) → link + push migrations
+  - [x] Supabase cloud project created (West US, `bhxfsxkczoonqrjhmoxx`) and CLI linked
+  - [ ] Push migrations after each DB PR merges (`supabase db push`)
   - [ ] Vercel project imported (operator) → set env vars
 
 ## Phase 2 — Auth and profiles
-- [ ] 2.1 Migration: `profiles`, role enum, helpers `is_staff/is_admin/is_suspended`, protection trigger, profile-on-signup trigger; pgTAP tests
+- [x] 2.1 Migration: `profiles`, role enum, helpers `is_staff/is_admin/is_suspended`, protection trigger, profile-on-signup trigger; pgTAP tests
 - [ ] 2.2 Migration: `agreement_versions`, `agreement_acceptances`; seed v1 Terms/Privacy/Contributor versions; pgTAP
 - [ ] 2.3 Sign-up (18+, Terms+Privacy), sign-in, callback, reset, sign-out; Zod schemas; e2e with local Inbucket
 - [ ] 2.4 Resend as Supabase SMTP (cloud) + email templates
