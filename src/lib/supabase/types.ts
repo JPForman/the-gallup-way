@@ -34,16 +34,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          approved_article_count: number
+          avatar_path: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          handle: string
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          suspended_until: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_article_count?: number
+          avatar_path?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          handle: string
+          id: string
+          role?: Database["public"]["Enums"]["user_role"]
+          suspended_until?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_article_count?: number
+          avatar_path?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          handle?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          suspended_until?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_publish_directly: { Args: never; Returns: boolean }
+      can_write: { Args: never; Returns: boolean }
+      current_role_name: {
+        Args: never
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      is_admin: { Args: never; Returns: boolean }
+      is_staff: { Args: never; Returns: boolean }
+      is_suspended: { Args: never; Returns: boolean }
+      is_valid_handle: { Args: { h: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "user" | "moderator" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -173,7 +220,9 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["user", "moderator", "admin"],
+    },
   },
 } as const
 
