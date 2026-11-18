@@ -9,6 +9,9 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 1.4 Supabase CLI init, local stack, `src/lib/supabase/{server,client,middleware}.ts`, `middleware.ts`
 - [x] 1.5 Playwright config + smoke test; GitHub Actions CI (lint, typecheck, unit, `supabase test db`, e2e)
 - [ ] 1.6 Vercel project + Supabase cloud project linked; env vars documented in `.env.example`
+  - [x] GitHub repo created (public) and pushed
+  - [ ] Supabase cloud project created (operator) → link + push migrations
+  - [ ] Vercel project imported (operator) → set env vars
 
 ## Phase 2 — Auth and profiles
 - [ ] 2.1 Migration: `profiles`, role enum, helpers `is_staff/is_admin/is_suspended`, protection trigger, profile-on-signup trigger; pgTAP tests
