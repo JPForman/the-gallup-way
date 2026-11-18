@@ -8,15 +8,16 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 1.3 Vitest + RTL config, first component test
 - [x] 1.4 Supabase CLI init, local stack, `src/lib/supabase/{server,client,middleware}.ts`, `middleware.ts`
 - [x] 1.5 Playwright config + smoke test; GitHub Actions CI (lint, typecheck, unit, `supabase test db`, e2e)
-- [ ] 1.6 Vercel project + Supabase cloud project linked; env vars documented in `.env.example`
+- [x] 1.6 Vercel project + Supabase cloud project linked; env vars documented in `.env.example`
   - [x] GitHub repo created (public) and pushed
   - [x] Supabase cloud project created (West US, `bhxfsxkczoonqrjhmoxx`) and CLI linked
   - [ ] Push migrations after each DB PR merges (`supabase db push`)
-  - [ ] Vercel project imported (operator) → set env vars
+  - [x] Vercel project imported, env vars set → https://the-gallup-way.vercel.app
 
 ## Phase 2 — Auth and profiles
 - [x] 2.1 Migration: `profiles`, role enum, helpers `is_staff/is_admin/is_suspended`, protection trigger, profile-on-signup trigger; pgTAP tests
-- [ ] 2.2 Migration: `agreement_versions`, `agreement_acceptances`; seed v1 Terms/Privacy/Contributor versions; pgTAP
+- [x] 2.2 Migration: `agreement_versions`, `agreement_acceptances`; seed v1 Terms/Privacy/Contributor versions; pgTAP
+- [ ] 2.2b Re-accept prompt: when a signed-in user hasn't accepted the current Terms or Privacy, show a banner or page to re-accept (do with 2.3/2.5)
 - [ ] 2.3 Sign-up (18+, Terms+Privacy), sign-in, callback, reset, sign-out; Zod schemas; e2e with local Inbucket
 - [ ] 2.4 Resend as Supabase SMTP (cloud) + email templates
 - [ ] 2.5 Profile page `/u/[handle]`, settings page (edit profile, avatar upload with compression, Storage policies)

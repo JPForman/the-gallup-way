@@ -100,6 +100,7 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 
 ## Repo and workflow
 - GitHub: https://github.com/JPForman/the-gallup-way (public; unlimited Actions minutes).
+- Vercel: https://the-gallup-way.vercel.app (production from `main`, preview per PR). Env vars set there: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. No service-role key on Vercel until account deletion (6.6).
 - Supabase cloud project: ref `bhxfsxkczoonqrjhmoxx` (West US), API `https://bhxfsxkczoonqrjhmoxx.supabase.co`. The CLI is linked (`supabase/.temp/project-ref`, git-ignored). Push migrations with `pnpm exec supabase db push` only after the PR is merged to `main`.
 - Linking writes the cloud's service versions into `supabase/.temp/*-version` and `storage-migration`. If `pnpm db:start` fails after a (re)link, delete those files (keep `project-ref`), remove this project's Supabase containers and volumes, and start again.
 - Work on a `step-X.Y-…` branch, then PR to `main` once CI is green. Commits use the GitHub noreply email set in this repo's local git config. Never commit with a personal email.
@@ -112,7 +113,7 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - Every e2e page check includes an axe accessibility scan in light and dark mode (`e2e/smoke.spec.ts`); new pages should be added to that list.
 
 ## Environment
-- `.env.local` (git-ignored; template in `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. Local values: `pnpm exec supabase status -o env`.
+- `.env.local` (git-ignored; template in `.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `IP_HASH_SALT` (server-only). Local values: `pnpm exec supabase status -o env`.
 - Public env is validated by Zod in `src/lib/env.ts` (`getPublicEnv()`, lazy). In dev, middleware skips session refresh if Supabase isn't configured; in production a missing var throws.
 - Supabase clients: `src/lib/supabase/server.ts` (Server Components/Actions, `server-only`), `client.ts` (Client Components), `middleware.ts` (`updateSession`, called by `src/middleware.ts`; matcher skips static assets and `/legal/*` to save invocations).
 - Known harmless build warning: supabase-js references `process.version(s)` in the Edge runtime (guarded in the library).
@@ -131,7 +132,7 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 ## Coding rules
 - TypeScript strict, no `any`. Generated DB types in `src/lib/supabase/types.ts`; regenerate after every migration.
 - **Security lives in the database.** Every table has RLS enabled with explicit policies. UI checks are convenience only. Never use the service-role key in code that runs per user request, except the self-service account-deletion route (which must verify the caller is deleting themselves). Otherwise service role is only for admin scripts and CI.
-- Use SQL helpers in policies (all `security definer`, `set search_path = ''`): `public.is_staff()`, `public.is_admin()`, `public.is_suspended()`, `public.can_write()` (signed in and not suspended), `public.can_publish_directly()` (≥ 3 approved stories, or staff), `public.current_role_name()`, `public.is_valid_handle(text)`.
+- Use SQL helpers in policies (all `security definer`, `set search_path = ''`): `public.is_staff()`, `public.is_admin()`, `public.is_suspended()`, `public.can_write()` (signed in, not suspended, 18+ attested, accepted the current Terms and Privacy), `public.can_publish_directly()` (≥ 3 approved stories, or staff), `public.current_role_name()`, `public.is_valid_handle(text)`, `public.current_agreement_version(kind)`, `public.has_accepted_current(kind)`.
 - Clients can never change `profiles.role`, `suspended_until`, `approved_article_count`, `id` or `created_at`: trigger `guard_profile_update` raises 42501 when `current_user` is `anon`/`authenticated`. Staff actions that change these must be `security definer` SQL functions (they run as the owner, pass the guard, and write `moderation_actions`), never direct client updates.
 - Profiles are created only by the `on_auth_user_created` trigger from sign-up metadata (`handle`, `display_name`). An invalid or taken handle falls back to `user_<id>`, so sign-up never fails in the DB; the app validates and checks availability first.
 - pgTAP tests simulate users with `set local role authenticated; set local request.jwt.claims to '{"sub":"<uuid>","role":"authenticated"}';` and create fixtures by inserting into `auth.users` (see `supabase/tests/010_profiles.test.sql`).
@@ -148,7 +149,9 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 ## Legal guardrails (product rules, not suggestions)
 - Site copy calls it a "community board". Never "our reporting" or "our newsroom".
 - Staff may hide, remove or restore content; they **do not rewrite user posts**. No admin "edit article" feature.
-- Every publish requires ticking the **Contributor Agreement** checkbox. Store a row in `agreement_acceptances` (user, article, agreement version, timestamp, IP hash). If the agreement text changes, bump the version.
+- Every publish requires ticking the **Contributor Agreement** checkbox. Store a row in `agreement_acceptances` (user, article, agreement version, timestamp, IP hash).
+- **Agreement versioning:** Terms, Privacy and Contributor Agreement text lives in `src/content/legal.ts`; versions and SHA-256 hashes live in `src/content/agreements.ts` and in `public.agreement_versions`. Changing the text makes `pnpm test` fail until you bump the version, update the hash, and add a migration inserting the new row. A new Terms or Privacy version blocks writing until each user re-accepts (`can_write()`).
+- **Acceptance records:** sign-up acceptances (Terms, Privacy, 18+) come from sign-up metadata via the `handle_new_user` trigger, because no session exists before email confirmation. Later acceptances are client inserts; a trigger forces owner, current version and `now()`. Rows are append-only. On account deletion `user_id` becomes null, so the record survives but is anonymized. IPs are stored only as `sha256(IP_HASH_SALT || ip)`.
 - Byline on every post: "By {display_name} · Posted by a community member", plus the disclaimer that the views and claims are the author's and have not been independently verified by the site. Opinion pieces are labeled "Opinion".
 - Report button on every article, comment and profile. Reported items enter the admin queue.
 - Sign-up requires email verification, an "I am 18 or older" checkbox, and acceptance of Terms + Privacy (stored as acceptances).
