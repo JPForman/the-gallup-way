@@ -1,0 +1,63 @@
+import Link from "next/link";
+import { PenLine, Search } from "lucide-react";
+import { DateLine } from "@/components/date-line";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { NAV_CATEGORIES, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+
+export function SiteHeader() {
+  return (
+    <header className="border-b border-rule">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="flex items-center justify-between gap-2 pt-3">
+          <DateLine />
+          <div className="flex items-center">
+            <Button asChild variant="ghost" size="icon" className="hidden size-11 md:inline-flex">
+              <Link href="/search" aria-label="Search">
+                <Search className="size-5" aria-hidden />
+              </Link>
+            </Button>
+            <ThemeToggle />
+            <Button asChild variant="outline" className="ml-1 hidden h-11 md:inline-flex">
+              <Link href="/auth/sign-in">Sign in</Link>
+            </Button>
+            <Button
+              asChild
+              className="ml-2 hidden h-11 bg-brand text-brand-foreground hover:bg-brand/90 md:inline-flex"
+            >
+              <Link href="/write">
+                <PenLine aria-hidden />
+                Write a story
+              </Link>
+            </Button>
+          </div>
+        </div>
+
+        <div className="py-3 text-center md:py-5">
+          <Link
+            href="/"
+            className="font-serif text-4xl leading-none font-bold tracking-tight md:text-6xl"
+          >
+            {SITE_NAME}
+          </Link>
+          <p className="mt-2 text-sm text-muted-foreground italic">{SITE_TAGLINE}</p>
+        </div>
+      </div>
+
+      <nav aria-label="Categories" className="border-t border-border">
+        <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-2 [scrollbar-width:none] md:justify-center">
+          {NAV_CATEGORIES.map((c) => (
+            <li key={c.href} className="shrink-0">
+              <Link
+                href={c.href}
+                className="inline-flex h-11 items-center px-3 text-sm font-semibold tracking-wide uppercase hover:text-brand"
+              >
+                {c.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+  );
+}

@@ -4,7 +4,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 
 ## Phase 1 — Foundation
 - [x] 1.1 `git init`, scaffold Next.js (App Router, TS strict, Tailwind, ESLint), pnpm, `images.unoptimized`, `src/lib/site.ts`
-- [ ] 1.2 shadcn/ui setup, base layout (masthead, footer with legal links, mobile bottom nav), dark mode, legal page stubs
+- [x] 1.2 shadcn/ui setup, base layout (masthead, footer with legal links, mobile bottom nav), dark mode, legal page stubs
 - [ ] 1.3 Vitest + RTL config, first component test
 - [ ] 1.4 Supabase CLI init, local stack, `src/lib/supabase/{server,client,middleware}.ts`, `middleware.ts`
 - [ ] 1.5 Playwright config + smoke test; GitHub Actions CI (lint, typecheck, unit, `supabase test db`, e2e)

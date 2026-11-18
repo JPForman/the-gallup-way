@@ -1,10 +1,15 @@
-import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+import { SITE_NAME } from "@/lib/site";
 
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="font-serif text-4xl font-bold tracking-tight">{SITE_NAME}</h1>
-      <p className="mt-2 text-lg opacity-80">{SITE_TAGLINE}</p>
+    <main className="mx-auto max-w-6xl px-4 py-8">
+      <h1 className="sr-only">{SITE_NAME}: today&apos;s stories</h1>
+      <section className="rounded-md border border-dashed border-border p-8 text-center">
+        <p className="font-serif text-2xl font-semibold">Stories are on the way.</p>
+        <p className="mt-2 text-muted-foreground">
+          The feed arrives in Phase 4. Until then, this is the layout shell.
+        </p>
+      </section>
     </main>
   );
 }

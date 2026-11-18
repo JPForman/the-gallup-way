@@ -9,14 +9,15 @@ A free, mobile-first **community board** for local Gallup stories, run by one pe
 
 It is **not a newspaper**: the operator does not write, edit or endorse user posts. Keep it that way in code and copy (see Legal guardrails).
 
-The site name lives in one constant: `src/lib/site.ts` → `SITE_NAME = "The Gallup Way"`. Never hard-code the name elsewhere.
+The site name lives in one constant: `src/lib/site.ts` → `SITE_NAME = "The Gallup Way"`. Never hard-code the name elsewhere. Footer legal links (`LEGAL_LINKS`) and the placeholder category strip (`NAV_CATEGORIES`, replaced by the DB in step 3.1) live there too.
 
 ## Stack (do not swap without asking)
 | Concern | Choice | Notes |
 |---|---|---|
 | Framework | Next.js 15 (App Router) + React + TypeScript (strict) | Server Components by default, Server Actions for mutations |
 | Styling | Tailwind CSS | Mobile-first: design at 375px, then scale up |
-| UI parts | shadcn/ui (copy-in components) | No heavy UI kits |
+| UI parts | shadcn/ui (copy-in components, `src/components/ui`) | No heavy UI kits. `cn()` = `clsx` + `tailwind-merge` in `src/lib/utils.ts` |
+| Theming | `next-themes` (class strategy, defaults to system) | Colors are CSS tokens in `src/app/globals.css`: newsprint neutrals + `brand` (red-rock accent); serif (Source Serif 4) for headlines, Inter for UI |
 | Rich text | Tiptap (limited extensions) | Stored as JSON; rendered via allowlist renderer (see Coding rules) |
 | Database + Auth + Storage | Supabase (free plan) | Postgres, email-verified auth, Row Level Security, Storage |
 | Supabase client | `@supabase/ssr` | Cookie-based sessions in Server Components and middleware |
@@ -58,10 +59,11 @@ src/
     search/  saved/       # search, bookmarks
     settings/             # profile edit, account deletion
     admin/                # staff-only area (queue, users, log)
-    legal/                # terms, privacy, guidelines, contributor-agreement, corrections, dmca
+    legal/[slug]/         # terms, privacy, guidelines, contributor-agreement, corrections, dmca (from src/content/legal.ts)
     contact/
     auth/                 # sign-in, sign-up, callback, reset
-  components/             # UI components (+ *.test.tsx next to them)
+  components/             # UI components (+ *.test.tsx next to them); ui/ = shadcn
+  content/                # static copy (legal.ts: draft legal pages)
   lib/
     site.ts               # SITE_NAME and other constants
     supabase/             # server.ts, client.ts, middleware.ts, types.ts (generated)
