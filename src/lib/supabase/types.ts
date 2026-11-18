@@ -34,8 +34,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      agreement_acceptances: {
+        Row: {
+          article_id: string | null
+          created_at: string
+          id: number
+          ip_hash: string | null
+          kind: Database["public"]["Enums"]["agreement_kind"]
+          user_id: string | null
+          version: number
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string
+          id?: never
+          ip_hash?: string | null
+          kind: Database["public"]["Enums"]["agreement_kind"]
+          user_id?: string | null
+          version: number
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string
+          id?: never
+          ip_hash?: string | null
+          kind?: Database["public"]["Enums"]["agreement_kind"]
+          user_id?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agreement_acceptances_kind_version_fkey"
+            columns: ["kind", "version"]
+            isOneToOne: false
+            referencedRelation: "agreement_versions"
+            referencedColumns: ["kind", "version"]
+          },
+        ]
+      }
+      agreement_versions: {
+        Row: {
+          effective_at: string
+          kind: Database["public"]["Enums"]["agreement_kind"]
+          text_sha256: string
+          version: number
+        }
+        Insert: {
+          effective_at?: string
+          kind: Database["public"]["Enums"]["agreement_kind"]
+          text_sha256: string
+          version: number
+        }
+        Update: {
+          effective_at?: string
+          kind?: Database["public"]["Enums"]["agreement_kind"]
+          text_sha256?: string
+          version?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          age_confirmed_at: string | null
           approved_article_count: number
           avatar_path: string | null
           bio: string | null
@@ -48,6 +108,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          age_confirmed_at?: string | null
           approved_article_count?: number
           avatar_path?: string | null
           bio?: string | null
@@ -60,6 +121,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          age_confirmed_at?: string | null
           approved_article_count?: number
           avatar_path?: string | null
           bio?: string | null
@@ -80,9 +142,17 @@ export type Database = {
     Functions: {
       can_publish_directly: { Args: never; Returns: boolean }
       can_write: { Args: never; Returns: boolean }
+      current_agreement_version: {
+        Args: { k: Database["public"]["Enums"]["agreement_kind"] }
+        Returns: number
+      }
       current_role_name: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
+      }
+      has_accepted_current: {
+        Args: { k: Database["public"]["Enums"]["agreement_kind"] }
+        Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
@@ -90,6 +160,7 @@ export type Database = {
       is_valid_handle: { Args: { h: string }; Returns: boolean }
     }
     Enums: {
+      agreement_kind: "terms" | "privacy" | "contributor"
       user_role: "user" | "moderator" | "admin"
     }
     CompositeTypes: {
@@ -221,6 +292,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      agreement_kind: ["terms", "privacy", "contributor"],
       user_role: ["user", "moderator", "admin"],
     },
   },
