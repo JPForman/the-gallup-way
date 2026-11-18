@@ -98,9 +98,14 @@ pnpm exec supabase ...   # any other Supabase CLI command (CLI is a pinned devDe
 ```
 Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailpit (catches auth emails) http://127.0.0.1:54324.
 
+## Repo and workflow
+- GitHub: https://github.com/JPForman/the-gallup-way (public; unlimited Actions minutes).
+- Work on a `step-X.Y-…` branch, then PR to `main` once CI is green. Commits use the GitHub noreply email set in this repo's local git config. Never commit with a personal email.
+
 ## CI (`.github/workflows/ci.yml`)
 - `checks` job: lint, typecheck, unit tests.
 - `integration` job: starts local Supabase, fails if `src/lib/supabase/types.ts` is stale (run `pnpm db:types` and commit), runs pgTAP, builds, runs Playwright (report uploaded on failure).
+- Runners pinned to `ubuntu-24.04`: `ubuntu-latest` is 26.04, which Playwright 1.56 doesn't support. Unpin after a Playwright upgrade.
 - Node 22 in CI. Local Node 20 still works, but Node 20 reached end-of-life in April 2026, so upgrade to 22 or 24 LTS.
 - Every e2e page check includes an axe accessibility scan in light and dark mode (`e2e/smoke.spec.ts`); new pages should be added to that list.
 
