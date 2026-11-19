@@ -16,7 +16,8 @@ insert into expected values
   ('articles',              'S---', 'SIUD'),
   ('categories',            'S---', 'S---'),
   ('corrections',           'S---', 'SI--'),
-  ('profiles',              'S---', 'S-U-');
+  ('profiles',              'S---', 'S-U-'),
+  ('reactions',             '----', 'SI-D');
 
 create function pg_temp.privs(r text, t text) returns text language sql as $$
   select

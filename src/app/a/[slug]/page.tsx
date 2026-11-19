@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleView } from "@/components/article/article-view";
+import { LikeButton } from "@/components/article/like-button";
 import { ViewCounter } from "@/components/article/view-counter";
 import { articleImageUrl, getPublishedArticle } from "@/lib/db/articles";
 import { excerpt, richTextToPlain } from "@/lib/richtext";
@@ -44,7 +45,11 @@ export default async function ArticlePage({ params }: Props) {
   if (!article) notFound();
   return (
     <main>
-      <ArticleView article={article} imageUrl={articleImageUrl} />
+      <ArticleView
+        article={article}
+        imageUrl={articleImageUrl}
+        actions={article.slug ? <LikeButton articleId={article.id} slug={article.slug} /> : null}
+      />
       <ViewCounter articleId={article.id} />
     </main>
   );

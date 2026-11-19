@@ -418,11 +418,55 @@ export type Database = {
         }
         Relationships: []
       }
+      reactions: {
+        Row: {
+          article_id: string
+          created_at: string
+          kind: Database["public"]["Enums"]["reaction_kind"]
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          kind?: Database["public"]["Enums"]["reaction_kind"]
+          user_id?: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          kind?: Database["public"]["Enums"]["reaction_kind"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      article_engagement: {
+        Args: { p_article_id: string }
+        Returns: {
+          can_like: boolean
+          like_count: number
+          liked: boolean
+        }[]
+      }
       can_correct_article: { Args: { p_article_id: string }; Returns: boolean }
       can_edit_article: { Args: { p_article_id: string }; Returns: boolean }
       can_publish_directly: { Args: never; Returns: boolean }
@@ -466,6 +510,7 @@ export type Database = {
       is_staff: { Args: never; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }
       is_valid_handle: { Args: { h: string }; Returns: boolean }
+      like_count: { Args: { p_article_id: string }; Returns: number }
       my_account: {
         Args: never
         Returns: {
@@ -575,6 +620,7 @@ export type Database = {
         | "event"
         | "sports"
         | "business"
+      reaction_kind: "like" | "dislike"
       user_role: "user" | "moderator" | "admin"
     }
     CompositeTypes: {
@@ -722,6 +768,7 @@ export const Constants = {
         "sports",
         "business",
       ],
+      reaction_kind: ["like", "dislike"],
       user_role: ["user", "moderator", "admin"],
     },
   },

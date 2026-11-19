@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 4.4: Phase 4 complete.** Push `20261120040000_search.sql` before merging (`/search` calls it). Rule: when the app reads a new DB function, push the migration before merging. Local: 244 pgTAP checks, 155 unit tests, 118 Playwright tests (2 desktop-only). `pnpm db:samples` loads sample stories locally.
-- **Next: 5.1 likes.** Migration: `reactions (article_id, user_id, kind reaction_kind default 'like', created_at, primary key (article_id, user_id, kind))`, enum `reaction_kind` ('like'; 'dislike' reserved, not used in v1). RLS: anyone can read counts for visible stories; `can_write()` users insert/delete their own like on published stories. Explicit grants + row in `090_table_privileges`. Count via a SQL function or `count` per article (never a stored counter as source of truth). Plug likes into `top_stories` (replace the `stats` CTE's `0 as likes`) and maybe `feed_latest` (like_count for cards). UI: like button on `/a/[slug]` (client component; the page stays cached, so read the count/has-liked on the client), optimistic toggle, signed-out → sign-in link. pgTAP + e2e.
+- **Done through 5.1.** Push `20261121000000_likes.sql` before merging (the home page build calls `top_stories`, which now uses `like_count`). Rule: when the app reads a new DB function, push the migration before merging. Local: 264 pgTAP checks, 160 unit tests, 122 Playwright tests (2 desktop-only). `pnpm db:samples` loads sample stories (with likes) locally.
+- **Next: 5.2 comments.** `comments (id, article_id, author_id, parent_id null|top-level comment (one level of replies), body plain text 1–2000, created_at, deleted_at)`; public read when the story is visible (deleted comments render as "[removed]" if they have replies); `can_write()` users comment on published stories unless `comments_locked`; delete own (soft); 60 comments/day/user → `PT429` (trigger). Explicit grants + `090` row. `comment_count(id)` (SECURITY DEFINER) → plug into `top_stories` (`0 as comments`). Consider adding like/comment counts to feed cards (needs drop + recreate of `feed_latest`/`top_stories`/`search_articles` return types). UI on `/a/[slug]`: list (client-loaded, since the page is cached; paginate 50), form for signed-in writers, reply, delete own, sign-in prompt, locked notice. pgTAP + e2e.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -47,7 +47,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 4.4 Search `/search` (full-text stories + writers)
 
 ## Phase 5 — Community
-- [ ] 5.1 Likes (reactions) + counts; pgTAP
+- [x] 5.1 Likes (reactions) + counts; pgTAP
 - [ ] 5.2 Comments (one-level replies, delete own, lock); rate limit; pgTAP
 - [ ] 5.3 Follows + Following feed
 - [ ] 5.4 Bookmarks + `/saved`
