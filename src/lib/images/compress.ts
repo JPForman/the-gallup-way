@@ -21,3 +21,17 @@ export async function compressAvatar(file: File): Promise<File> {
   });
   return new File([out], "avatar.webp", { type: "image/webp" });
 }
+
+/** Browser-side: article photo, WebP, <= 1600px wide, target <= 250 KB. */
+export async function compressArticleImage(file: File): Promise<File> {
+  if (file.size > MAX_UPLOAD_BYTES) throw new ImageTooLargeError();
+  if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
+  const out = await imageCompression(file, {
+    maxWidthOrHeight: 1600,
+    maxSizeMB: 0.25,
+    fileType: "image/webp",
+    useWebWorker: true,
+    initialQuality: 0.82,
+  });
+  return new File([out], "photo.webp", { type: "image/webp" });
+}
