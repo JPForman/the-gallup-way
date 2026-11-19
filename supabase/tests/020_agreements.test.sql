@@ -58,7 +58,7 @@ select is((select ip_hash from public.agreement_acceptances
 set local role anon;
 set local request.jwt.claims to '{"role":"anon"}';
 select is((select count(*)::int from public.agreement_versions), 3, 'anon can read versions');
-select is((select count(*)::int from public.agreement_acceptances), 0, 'anon cannot read acceptances');
+select throws_ok($$select count(*) from public.agreement_acceptances$$, '42501', null, 'anon cannot read acceptances');
 select throws_ok(
   $$insert into public.agreement_acceptances (kind, version) values ('terms', 1)$$,
   '42501', null, 'anon cannot record acceptances');
