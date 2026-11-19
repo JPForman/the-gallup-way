@@ -20,13 +20,14 @@ export function isOpinion(article: Pick<PublicArticle, "category" | "content_typ
   return article.content_type === "opinion" || article.category === "opinion";
 }
 
-/** "Community · News report", or just "Opinion" for opinion pieces. */
+/** "Community · News report", "News report" (not "News · News report"), or "Opinion". */
 export function articleKicker(article: Pick<PublicArticle, "category" | "content_type">): string {
   if (isOpinion(article)) return "Opinion";
   const category = CATEGORIES.find((c) => c.slug === article.category)?.name;
   const type = CONTENT_TYPES.find((t) => t.value === article.content_type)?.label;
-  const parts = [category, type && type !== category ? type : undefined].filter(Boolean);
-  return parts.join(" · ");
+  // "News · News report" reads as a stutter: show just "News report".
+  if (category && type?.startsWith(category)) return type;
+  return [category, type].filter(Boolean).join(" · ");
 }
 
 type Image = PublicArticle["images"][number];

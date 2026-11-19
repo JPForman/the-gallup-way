@@ -410,6 +410,28 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      feed_latest: {
+        Args: {
+          p_before_id?: string
+          p_before_published_at?: string
+          p_category?: string
+          p_limit?: number
+        }
+        Returns: {
+          author_display_name: string
+          author_handle: string
+          category: string
+          content_type: Database["public"]["Enums"]["content_type"]
+          dek: string
+          excerpt: string
+          id: string
+          image_alt: string
+          image_path: string
+          published_at: string
+          slug: string
+          title: string
+        }[]
+      }
       has_accepted_current: {
         Args: { k: Database["public"]["Enums"]["agreement_kind"] }
         Returns: boolean

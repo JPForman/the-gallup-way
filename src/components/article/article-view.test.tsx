@@ -31,6 +31,7 @@ describe("articleKicker", () => {
   });
   it("doesn't repeat a matching type", () => {
     expect(articleKicker({ category: "community", content_type: "community" })).toBe("Community");
+    expect(articleKicker({ category: "news", content_type: "news" })).toBe("News report");
   });
   it("labels opinion pieces by type or category", () => {
     expect(articleKicker({ category: "news", content_type: "opinion" })).toBe("Opinion");
