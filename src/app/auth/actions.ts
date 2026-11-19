@@ -2,10 +2,10 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 import { AGREEMENTS } from "@/content/agreements";
 import { safeNext } from "@/lib/auth/redirect";
 import { clientIp, hashIp } from "@/lib/auth/ip-hash";
+import { fieldErrorsOf, formValues, type FormState } from "@/lib/forms/state";
 import { createClient } from "@/lib/supabase/server";
 import {
   resetRequestSchema,
@@ -14,22 +14,7 @@ import {
   updatePasswordSchema,
 } from "@/lib/validation/auth";
 
-export type FormState = {
-  /** Message shown above the form (error or success). */
-  message?: string;
-  status?: "error" | "success";
-  fieldErrors?: Record<string, string[] | undefined>;
-  /** Echo of non-secret fields so the form keeps what the user typed. */
-  values?: Record<string, string>;
-};
-
-function formValues(formData: FormData, keys: string[]): Record<string, string> {
-  return Object.fromEntries(keys.map((k) => [k, String(formData.get(k) ?? "")]));
-}
-
-function fieldErrorsOf(error: z.ZodError): FormState["fieldErrors"] {
-  return z.flattenError(error).fieldErrors as FormState["fieldErrors"];
-}
+export type { FormState };
 
 // ---------------------------------------------------------------------------
 // Sign up

@@ -158,6 +158,20 @@ export type Database = {
       is_staff: { Args: never; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }
       is_valid_handle: { Args: { h: string }; Returns: boolean }
+      my_account: {
+        Args: never
+        Returns: {
+          age_confirmed: boolean
+          approved_article_count: number
+          can_write: boolean
+          handle: string
+          id: string
+          needs_privacy: boolean
+          needs_terms: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          suspended_until: string
+        }[]
+      }
     }
     Enums: {
       agreement_kind: "terms" | "privacy" | "contributor"

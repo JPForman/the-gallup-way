@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 type FieldProps = {
   name: string;
@@ -67,6 +68,44 @@ export function CheckboxField({ name, children, errors, defaultChecked }: Checkb
         />
         <span>{children}</span>
       </label>
+      {errorId ? (
+        <p id={errorId} className="text-sm font-medium text-destructive">
+          {errors?.join(" ")}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+type TextareaFieldProps = {
+  name: string;
+  label: string;
+  hint?: ReactNode;
+  errors?: string[];
+} & Omit<ComponentProps<typeof Textarea>, "name">;
+
+export function TextareaField({ name, label, hint, errors, id, ...props }: TextareaFieldProps) {
+  const inputId = id ?? `field-${name}`;
+  const hintId = hint ? `${inputId}-hint` : undefined;
+  const errorId = errors?.length ? `${inputId}-error` : undefined;
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={inputId} className="text-sm font-semibold">
+        {label}
+      </Label>
+      <Textarea
+        id={inputId}
+        name={name}
+        className="min-h-28 text-base"
+        aria-invalid={errors?.length ? true : undefined}
+        aria-describedby={[hintId, errorId].filter(Boolean).join(" ") || undefined}
+        {...props}
+      />
+      {hint ? (
+        <p id={hintId} className="text-sm text-muted-foreground">
+          {hint}
+        </p>
+      ) : null}
       {errorId ? (
         <p id={errorId} className="text-sm font-medium text-destructive">
           {errors?.join(" ")}

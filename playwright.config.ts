@@ -10,6 +10,8 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
   workers: isCI ? 2 : undefined,
+  // The dev server compiles on demand; give assertions room under parallel load.
+  expect: { timeout: 10_000 },
   reporter: isCI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL,

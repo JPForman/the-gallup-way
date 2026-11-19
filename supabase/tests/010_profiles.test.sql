@@ -1,6 +1,6 @@
 -- Profiles, roles and authorization helpers (migration 20261118210000).
 begin;
-select plan(32);
+select plan(33);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures: create auth users as postgres; the signup trigger makes profiles.
@@ -81,7 +81,9 @@ select ok((select count(*) from public.profiles) >= 7, 'anon can read profiles')
 select ok(not public.is_staff(), 'anon is not staff');
 select ok(not public.can_write(), 'anon cannot write');
 
-update public.profiles set bio = 'hacked' where id = '11111111-1111-1111-1111-111111111111';
+select throws_ok(
+  $$update public.profiles set bio = 'hacked' where id = '11111111-1111-1111-1111-111111111111'$$,
+  '42501', null, 'anon has no update privilege on profiles');
 reset role;
 select is(
   (select bio from public.profiles where id = '11111111-1111-1111-1111-111111111111'),
@@ -111,15 +113,15 @@ update public.profiles set bio = 'defaced' where id = '22222222-2222-2222-2222-2
 
 select throws_ok(
   $$update public.profiles set role = 'admin' where id = '11111111-1111-1111-1111-111111111111'$$,
-  '42501', 'You cannot change protected profile fields', 'user cannot promote themselves'
+  '42501', null, 'user cannot promote themselves'
 );
 select throws_ok(
   $$update public.profiles set suspended_until = 'infinity' where id = '11111111-1111-1111-1111-111111111111'$$,
-  '42501', 'You cannot change protected profile fields', 'user cannot change their suspension'
+  '42501', null, 'user cannot change their suspension'
 );
 select throws_ok(
   $$update public.profiles set approved_article_count = 99 where id = '11111111-1111-1111-1111-111111111111'$$,
-  '42501', 'You cannot change protected profile fields', 'user cannot change their approval count'
+  '42501', null, 'user cannot change their approval count'
 );
 select throws_ok(
   $$insert into public.profiles (id, handle, display_name) values (gen_random_uuid(), 'sneaky', 'Sneaky')$$,

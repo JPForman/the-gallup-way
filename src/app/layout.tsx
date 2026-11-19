@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
+import { AccountBanner } from "@/components/account-banner";
 import { BottomNav } from "@/components/bottom-nav";
 import { HydrationMarker } from "@/components/hydration-marker";
 import { SiteFooter } from "@/components/site-footer";
@@ -39,6 +40,7 @@ export default function RootLayout({
             Skip to content
           </a>
           <SiteHeader />
+          <AccountBanner />
           <div id="main" className="pb-20 md:pb-0">
             {children}
             <SiteFooter />
