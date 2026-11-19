@@ -110,7 +110,8 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - `integration` job: starts local Supabase, fails if `src/lib/supabase/types.ts` is stale (run `pnpm db:types` and commit), runs pgTAP, builds, runs Playwright (report uploaded on failure).
 - Runners pinned to `ubuntu-24.04`: `ubuntu-latest` is 26.04, which Playwright 1.56 doesn't support. Unpin after a Playwright upgrade.
 - Node 22 in CI. Local Node 20 still works, but Node 20 reached end-of-life in April 2026, so upgrade to 22 or 24 LTS.
-- E2E helpers: `gotoReady(page, path)` waits for `<html data-hydrated>` (set by `HydrationMarker`) before using forms. `authLinkFromEmail(to, subject)` reads Mailpit and returns the `/auth/confirm` path. Use `uniqueEmail()` per test. Scope `role=alert`/`status` queries to `main`, because Next's dev route announcer also uses `role=alert`.
+- E2E helpers: `newSignedInUser(page, prefix)` and sign-in helpers in `e2e/helpers/auth.ts`. `sql` / `userIdByEmail` in `e2e/helpers/db.ts` set up state in the LOCAL database only (e.g. suspensions); change only the test's own user. `gotoReady(page, path)` waits for `<html data-hydrated>` (set by `HydrationMarker`) before using forms. `authLinkFromEmail(to, subject)` reads Mailpit and returns the `/auth/confirm` path. Use `uniqueEmail()` per test. Scope `role=alert`/`status` queries to `main`, because Next's dev route announcer also uses `role=alert`.
+- If local auth emails arrive with Supabase's default subject or body, the gateway lost the custom templates: run `pnpm db:stop && pnpm db:start`.
 - Local `supabase/config.toml` raises auth rate limits (email, sign-in, verification) for e2e. Cloud limits are separate (Dashboard → Authentication → Rate Limits).
 - Every e2e page check includes an axe accessibility scan in light and dark mode (`e2e/smoke.spec.ts`); new pages should be added to that list.
 
@@ -128,7 +129,16 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - `safeNext()` (`src/lib/auth/redirect.ts`) sanitizes every `next` redirect. IPs go through `hashIp(clientIp(headers))`, which returns null without `IP_HASH_SALT`.
 - The header's sign-in state (`AuthControls`) is a client component, so pages stay static. Never read cookies or the user in the root layout or header on the server.
 - Forms: `Field` / `CheckboxField` / `FormMessage` / `SubmitButton` in `src/components/forms/` (labels, hints and errors wired with `aria-describedby` and `aria-invalid`).
+- Shared form types: `FormState`, `formValues`, `fieldErrorsOf` in `src/lib/forms/state.ts`.
 - Validation mirrors the DB: `src/lib/validation/handle.ts` must match `is_valid_handle()` (checked by test).
+
+## Data access patterns
+- **Public, cached pages** (ISR) read through `createPublicClient()` (`src/lib/supabase/public.ts`): no cookies, always `anon`. A dynamic route also needs `generateStaticParams() { return [] }` plus `export const revalidate = 60` to be ISR (`●` in the build output, not `ƒ`). After a mutation, `revalidatePath` the affected public pages.
+- **Per-user pages** (`/settings`, `/me`) use the cookie-based server client and are dynamic.
+- **Owner-only UI on cached pages** (e.g. "Edit profile") is a small client component that compares the session user id. It's display only.
+- **Profiles are column-restricted:** clients may select only `PUBLIC_PROFILE_COLUMNS` (`id, handle, display_name, bio, avatar_path, role, created_at`; `select *` fails) and update only `handle, display_name, bio, avatar_path`. Private status comes from `rpc('my_account')` (suspension, 18+, approval count, `needs_terms`/`needs_privacy`, `can_write`). Helpers are in `src/lib/db/profiles.ts`.
+- **Avatars:** public bucket `avatars`, path `<user id>/<name>.webp` (DB check constraint plus storage policies on the owner's folder), ≤ 200 KB WebP. The browser compresses to ≤ 512px, ~100 KB (`src/lib/images/compress.ts`, lazy-loaded) and uploads directly. The form saves the path, and the old file is deleted.
+- **Site-wide notices:** `AccountBanner` (client, in the layout) shows suspension or "review and accept" (to `/account/agreements`).
 
 ## Domain rules
 - **Roles:** `user` (default), `moderator`, `admin` on `profiles.role`. "Contributor" is not a role: any verified, non-suspended user who accepts the Contributor Agreement can write.

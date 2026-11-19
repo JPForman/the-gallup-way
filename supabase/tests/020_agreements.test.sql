@@ -90,7 +90,7 @@ select ok((select min(created_at) > now() - interval '1 minute' from public.agre
 select ok(not public.can_write(), 'still cannot write without the 18+ attestation');
 select throws_ok(
   $$update public.profiles set age_confirmed_at = now() where id = 'aaaaaaaa-0000-0000-0000-000000000002'$$,
-  '42501', 'You cannot change protected profile fields', 'user cannot set their own 18+ attestation');
+  '42501', null, 'user cannot set their own 18+ attestation');
 
 select throws_ok(
   $$insert into public.agreement_acceptances (kind, version) values ('contributor', 1)$$,

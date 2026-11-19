@@ -47,11 +47,16 @@ export function AuthControls() {
 
   if (state === "signed-in") {
     return (
-      <form action={signOut} className="ml-1">
-        <Button type="submit" variant="outline" className="h-11">
-          Sign out
+      <>
+        <Button asChild variant="ghost" className="ml-1 hidden h-11 md:inline-flex">
+          <Link href="/me">My profile</Link>
         </Button>
-      </form>
+        <form action={signOut} className="ml-1">
+          <Button type="submit" variant="outline" className="h-11">
+            Sign out
+          </Button>
+        </form>
+      </>
     );
   }
 

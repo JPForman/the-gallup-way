@@ -1,32 +1,7 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { PASSWORD, fillSignUp as signUp, handleFor, signIn, signOutButton } from "./helpers/auth";
 import { authLinkFromEmail, uniqueEmail } from "./helpers/mailpit";
 import { gotoReady } from "./helpers/page";
-
-const PASSWORD = "correct horse battery";
-
-function handleFor(email: string): string {
-  return `u_${email.split("@")[0]!.replace(/[^a-z0-9]/g, "").slice(-20)}`;
-}
-
-async function signUp(page: Page, email: string, handle = handleFor(email)) {
-  await gotoReady(page, "/auth/sign-up");
-  await page.getByLabel("Name").fill("Test Resident");
-  await page.getByLabel("Handle").fill(handle);
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(PASSWORD);
-  await page.getByLabel("I am 18 or older.").check();
-  await page.getByLabel(/I agree to the Terms of Use/).check();
-  await page.getByRole("button", { name: "Create account" }).click();
-}
-
-async function signIn(page: Page, email: string, password = PASSWORD) {
-  await gotoReady(page, "/auth/sign-in");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: "Sign in" }).click();
-}
-
-const signOutButton = (page: Page) => page.getByRole("button", { name: "Sign out" });
 
 test.describe("auth", () => {
   test("sign up, confirm by email, sign out and back in", async ({ page }) => {
