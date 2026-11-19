@@ -345,6 +345,19 @@ export type Database = {
         }[]
       }
       richtext_plain: { Args: { node: Json }; Returns: string }
+      save_article: {
+        Args: {
+          p_article_id?: string
+          p_body_json?: Json
+          p_category?: string
+          p_content_type?: Database["public"]["Enums"]["content_type"]
+          p_dek?: string
+          p_images?: Json
+          p_sources?: Json
+          p_title?: string
+        }
+        Returns: Json
+      }
       slugify: { Args: { t: string }; Returns: string }
       submit_article: {
         Args: { p_article_id: string }
