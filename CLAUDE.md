@@ -104,6 +104,16 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - Supabase cloud project: ref `bhxfsxkczoonqrjhmoxx` (West US), API `https://bhxfsxkczoonqrjhmoxx.supabase.co`. The CLI is linked (`supabase/.temp/project-ref`, git-ignored). Push migrations with `pnpm exec supabase db push` only after the PR is merged to `main`.
 - Linking writes the cloud's service versions into `supabase/.temp/*-version` and `storage-migration`. If `pnpm db:start` fails after a (re)link, delete those files (keep `project-ref`), remove this project's Supabase containers and volumes, and start again.
 - Work on a `step-X.Y-…` branch, then PR to `main` once CI is green. Commits use the GitHub noreply email set in this repo's local git config. Never commit with a personal email.
+- **Step loop (agreed with the owner; no need to re-ask each step):**
+  1. `git checkout main && git pull`, then `git checkout -b step-X.Y-name`.
+  2. Build the step: migration + pgTAP test for any DB change, `pnpm db:reset && pnpm db:test && pnpm db:types`, unit tests, a Playwright spec for the main path.
+  3. Locally: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`, and the relevant `pnpm exec playwright test e2e/<spec>`.
+  4. Update CLAUDE.md / docs and tick the step in `docs/BUILD_PLAN.md` in the same commit.
+  5. Push, `gh pr create`, watch CI (`gh run watch`), then `gh pr merge <n> --rebase --delete-branch`.
+  6. If the step added migrations: `pnpm exec supabase db push --dry-run`, then `pnpm exec supabase db push`.
+  7. Summarize for the owner and ask before starting the next step.
+- **Owner does (don't attempt):** Supabase/Vercel dashboards, DNS/Resend, any real passwords or secrets. Never set or type a password for a real account. Test credentials go only in seed/fixture files, and they're not repeated in chat.
+- **Session start:** Docker Desktop running → `pnpm db:start` (then `pnpm db:reset` if migrations changed) → `pnpm dev` when the owner wants to look around (http://localhost:3000).
 
 ## CI (`.github/workflows/ci.yml`)
 - `checks` job: lint, typecheck, unit tests.
@@ -113,6 +123,7 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - E2E helpers: `newSignedInUser(page, prefix)` and sign-in helpers in `e2e/helpers/auth.ts`. `sql` / `userIdByEmail` in `e2e/helpers/db.ts` set up state in the LOCAL database only (e.g. suspensions); change only the test's own user. `gotoReady(page, path)` waits for `<html data-hydrated>` (set by `HydrationMarker`) before using forms. `authLinkFromEmail(to, subject)` reads Mailpit and returns the `/auth/confirm` path. Use `uniqueEmail()` per test. Scope `role=alert`/`status` queries to `main`, because Next's dev route announcer also uses `role=alert`.
 - If local auth emails arrive with Supabase's default subject or body, the gateway lost the custom templates: run `pnpm db:stop && pnpm db:start`.
 - Local `supabase/config.toml` raises auth rate limits (email, sign-in, verification) for e2e. Cloud limits are separate (Dashboard → Authentication → Rate Limits).
+- Known dev-only flake: under the full parallel suite on `pnpm dev`, the first save on `/write` once rendered `/edit/<id>` while the address bar stayed `/write` (not reproduced in 12 reruns or in CI, which uses `pnpm start`). If it shows up again, look at the `saveArticle` redirect inside `startTransition`.
 - Every e2e page check includes an axe accessibility scan in light and dark mode (`e2e/smoke.spec.ts`); new pages should be added to that list.
 
 ## Environment
