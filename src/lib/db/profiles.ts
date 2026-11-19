@@ -61,3 +61,12 @@ export function avatarUrl(path: string | null): string | null {
   if (!path) return null;
   return `${getPublicEnv().NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET}/${path}`;
 }
+
+export type WriterResult = Pick<PublicProfile, "id" | "handle" | "display_name" | "bio" | "avatar_path">;
+
+/** Writers whose handle or display name contains the text (search_profiles()). */
+export async function searchWriters(client: Client, query: string): Promise<WriterResult[]> {
+  const { data, error } = await client.rpc("search_profiles", { p_query: query, p_limit: 20 });
+  if (error) throw error;
+  return (data ?? []) as WriterResult[];
+}

@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 4.3** (no migration). Rule: when the build reads a new DB function, push the migration before merging. Local: 227 pgTAP checks, 150 unit tests, 102 Playwright tests (2 desktop-only).
-- **Next: 4.4 search `/search`** (header and bottom nav already link there). Stories: full-text over `articles.search` (generated tsvector, GIN index `articles_search_idx`) via a SECURITY INVOKER SQL function `search_articles(p_query, p_limit, p_offset or cursor)` using `websearch_to_tsquery('english', ...)`, ranked by `ts_rank` then recency, published only, same columns as `feed_latest`. Writers: `search_profiles(p_query)` on handle/display_name (prefix/ILIKE with escaped input, or a trigram index if needed). Page is dynamic (`?q=`), so keep it light: no per-keystroke requests (submit form, works without JS), cap query length (~100), 20 results, tabs Stories / Writers. Highlight nothing fancy in v1. pgTAP + e2e.
+- **Done through 4.4: Phase 4 complete.** Push `20261120040000_search.sql` before merging (`/search` calls it). Rule: when the app reads a new DB function, push the migration before merging. Local: 244 pgTAP checks, 155 unit tests, 118 Playwright tests (2 desktop-only). `pnpm db:samples` loads sample stories locally.
+- **Next: 5.1 likes.** Migration: `reactions (article_id, user_id, kind reaction_kind default 'like', created_at, primary key (article_id, user_id, kind))`, enum `reaction_kind` ('like'; 'dislike' reserved, not used in v1). RLS: anyone can read counts for visible stories; `can_write()` users insert/delete their own like on published stories. Explicit grants + row in `090_table_privileges`. Count via a SQL function or `count` per article (never a stored counter as source of truth). Plug likes into `top_stories` (replace the `stats` CTE's `0 as likes`) and maybe `feed_latest` (like_count for cards). UI: like button on `/a/[slug]` (client component; the page stays cached, so read the count/has-liked on the client), optimistic toggle, signed-out → sign-in link. pgTAP + e2e.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -44,7 +44,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 4.1 Home layout (lead + grid desktop, single column mobile), Latest feed, cursor pagination
 - [x] 4.2 `article_views` daily aggregate + RPC; `top_stories` SQL function + `src/lib/ranking.ts` with tests
 - [x] 4.3 Category pages `/c/[slug]`
-- [ ] 4.4 Search `/search` (full-text stories + writers)
+- [x] 4.4 Search `/search` (full-text stories + writers)
 
 ## Phase 5 — Community
 - [ ] 5.1 Likes (reactions) + counts; pgTAP

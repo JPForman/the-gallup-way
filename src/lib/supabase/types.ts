@@ -504,6 +504,34 @@ export type Database = {
         }
         Returns: Json
       }
+      search_articles: {
+        Args: { p_limit?: number; p_offset?: number; p_query: string }
+        Returns: {
+          author_display_name: string
+          author_handle: string
+          category: string
+          content_type: Database["public"]["Enums"]["content_type"]
+          dek: string
+          excerpt: string
+          id: string
+          image_alt: string
+          image_path: string
+          published_at: string
+          rank: number
+          slug: string
+          title: string
+        }[]
+      }
+      search_profiles: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: {
+          avatar_path: string
+          bio: string
+          display_name: string
+          handle: string
+          id: string
+        }[]
+      }
       slugify: { Args: { t: string }; Returns: string }
       submit_article: {
         Args: { p_article_id: string }
