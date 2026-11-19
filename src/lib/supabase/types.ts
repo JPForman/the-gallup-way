@@ -226,6 +226,7 @@ export type Database = {
           created_at: string
           dek: string | null
           deleted_at: string | null
+          edited_at: string | null
           id: string
           published_at: string | null
           search: unknown
@@ -245,6 +246,7 @@ export type Database = {
           created_at?: string
           dek?: string | null
           deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           published_at?: string | null
           search?: unknown
@@ -264,6 +266,7 @@ export type Database = {
           created_at?: string
           dek?: string | null
           deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           published_at?: string | null
           search?: unknown

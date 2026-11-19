@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 3.5** (cloud DB migrated through `20261119030000_revisions_and_corrections.sql`). Local: 192 pgTAP checks, 125 unit tests, 76 Playwright tests.
-- **Next: 3.6 article page `/a/[slug]`** (ISR: `createPublicClient()`, `generateStaticParams() { return [] }`, `revalidate = 60`; the editor's "View story" link and `revalidatePath('/a/<slug>')` already point there). Headline, dek, byline "By {display_name} · Posted by a community member" + the not-verified disclaimer, "Opinion" label, category, published date (and "Updated" when edited later), images with caption/credit, `<RichText>` body, sources list, corrections via `listCorrections` + `<CorrectionsList>`. 404 for non-visible stories. Add `/a/<seeded slug>` to the smoke axe list (needs a published story in `seed.sql`). e2e: publish → open the article → see byline, disclaimer, correction.
+- **Done through 3.6** (cloud DB: push `20261120000000_article_edited_at.sql` after merge). Local: 198 pgTAP checks, 132 unit tests, 84 Playwright tests. Phase 3 complete.
+- **Next: 4.1 home layout** (`src/app/page.tsx` → lead story + grid on desktop, single column on mobile; Latest feed with cursor pagination, 20 per page, on `published_at desc, id`; ISR + `revalidatePath('/')` already called on publish). Card: kicker (`articleKicker`), headline, dek/excerpt, byline, date, lead-image thumbnail. Add a `listLatestArticles(client, cursor)` helper in `src/lib/db/articles.ts` using `articles_feed_idx`. Top/Following tabs come with 4.2/5.3.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -38,7 +38,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 3.3 Editor `/write`, `/edit/[id]`: drafts, images (compress, ≤3, caption/credit), sources
 - [x] 3.4 Publish flow: Contributor Agreement checkbox → acceptance row → `pending_review` or `published`
 - [x] 3.5 Migration: `article_revisions` trigger, `corrections`; author correction UI
-- [ ] 3.6 Article page `/a/[slug]`: byline, disclaimer, labels, images, sources, corrections; ISR + tags
+- [x] 3.6 Article page `/a/[slug]`: byline, disclaimer, labels, images, sources, corrections; ISR + tags
 
 ## Phase 4 — News experience
 - [ ] 4.1 Home layout (lead + grid desktop, single column mobile), Latest feed, cursor pagination

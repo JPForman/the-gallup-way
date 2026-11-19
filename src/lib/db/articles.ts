@@ -103,3 +103,63 @@ export type SaveArticleResult = {
   slug: string | null;
   removed_paths: string[];
 };
+
+/** Slugs are frozen at submission: `<slugified title>-<6 hex>` (see submit_article). */
+export const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+export type PublicArticle = Pick<
+  ArticleRow,
+  "id" | "slug" | "title" | "dek" | "body_json" | "category" | "content_type" | "published_at" | "edited_at"
+> & {
+  /** Null after the author deleted their account and kept their stories. */
+  author: { handle: string; display_name: string; avatar_path: string | null } | null;
+  sources: { url: string; label: string | null }[];
+  images: { storage_path: string; alt_text: string; caption: string | null; credit: string | null }[];
+  corrections: { id: number; body: string; created_at: string }[];
+};
+
+type PublicArticleRow = Omit<PublicArticle, "sources" | "images" | "corrections"> & {
+  article_sources: { url: string; label: string | null; position: number }[];
+  article_images: {
+    storage_path: string;
+    alt_text: string;
+    caption: string | null;
+    credit: string | null;
+    position: number;
+  }[];
+  corrections: { id: number; body: string; created_at: string }[];
+};
+
+/**
+ * A published, not-deleted story by slug, or null. Use with the public
+ * (anon) client, so RLS returns only what everyone may see.
+ */
+export async function getPublishedArticle(client: Client, slug: string): Promise<PublicArticle | null> {
+  if (!ARTICLE_SLUG_PATTERN.test(slug) || slug.length > 100) return null;
+  const { data, error } = await client
+    .from("articles")
+    .select(
+      "id, slug, title, dek, body_json, category, content_type, published_at, edited_at, " +
+        "author:profiles!articles_author_id_fkey (handle, display_name, avatar_path), " +
+        "article_sources (url, label, position), " +
+        "article_images (storage_path, alt_text, caption, credit, position), " +
+        "corrections (id, body, created_at)",
+    )
+    .eq("slug", slug)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .maybeSingle<PublicArticleRow>();
+  if (error) throw error;
+  if (!data) return null;
+  const { article_sources, article_images, corrections, ...article } = data;
+  return {
+    ...article,
+    sources: [...article_sources]
+      .sort((a, b) => a.position - b.position)
+      .map(({ url, label }) => ({ url, label })),
+    images: [...article_images]
+      .sort((a, b) => a.position - b.position)
+      .map(({ storage_path, alt_text, caption, credit }) => ({ storage_path, alt_text, caption, credit })),
+    corrections: [...corrections].sort((a, b) => a.created_at.localeCompare(b.created_at)),
+  };
+}
