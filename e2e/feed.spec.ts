@@ -56,7 +56,7 @@ test("Latest shows the newest story as the lead, then 19 more, with pages of old
     const first = page.getByRole("main").getByRole("listitem").first();
     await expect(first.getByRole("heading")).toHaveText(`Feed ${run} F01`);
     await expect(page.getByRole("link", { name: `Feed ${run} F02` })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Front page" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Latest stories" })).toBeVisible();
 
     await page.getByRole("link", { name: `Feed ${run} F01` }).click();
     await expect(page.getByRole("heading", { level: 1, name: `Feed ${run} F01` })).toBeVisible();

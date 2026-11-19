@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 4.2.** Push `20261120030000_views_and_top_stories.sql` to the cloud BEFORE merging (the home page is prerendered from `top_stories`). Rule: when the build reads a new DB function, push first. Local: 227 pgTAP checks, 148 unit tests, 92 Playwright tests (2 desktop-only).
-- **Next: 4.3 category pages `/c/[slug]`** (the header's category strip already links there). ISR, `generateStaticParams` from `CATEGORIES` (8 known slugs, so prerender them all) + `dynamicParams = false` (unknown → 404). Use `listLatestArticles(client, { category })` (feed_latest already filters by category) with the same `FrontPage` layout, heading = category name, and cursor pages `/c/[slug]/[cursor]` (or reuse a shared paginated component). Mark the active category in the header strip (`aria-current`). Publishing/editing should also `revalidatePath('/c/<category>')`.
+- **Done through 4.3** (no migration). Rule: when the build reads a new DB function, push the migration before merging. Local: 227 pgTAP checks, 150 unit tests, 102 Playwright tests (2 desktop-only).
+- **Next: 4.4 search `/search`** (header and bottom nav already link there). Stories: full-text over `articles.search` (generated tsvector, GIN index `articles_search_idx`) via a SECURITY INVOKER SQL function `search_articles(p_query, p_limit, p_offset or cursor)` using `websearch_to_tsquery('english', ...)`, ranked by `ts_rank` then recency, published only, same columns as `feed_latest`. Writers: `search_profiles(p_query)` on handle/display_name (prefix/ILIKE with escaped input, or a trigram index if needed). Page is dynamic (`?q=`), so keep it light: no per-keystroke requests (submit form, works without JS), cap query length (~100), 20 results, tabs Stories / Writers. Highlight nothing fancy in v1. pgTAP + e2e.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -43,7 +43,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 ## Phase 4 — News experience
 - [x] 4.1 Home layout (lead + grid desktop, single column mobile), Latest feed, cursor pagination
 - [x] 4.2 `article_views` daily aggregate + RPC; `top_stories` SQL function + `src/lib/ranking.ts` with tests
-- [ ] 4.3 Category pages `/c/[slug]`
+- [x] 4.3 Category pages `/c/[slug]`
 - [ ] 4.4 Search `/search` (full-text stories + writers)
 
 ## Phase 5 — Community

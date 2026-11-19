@@ -53,6 +53,8 @@ test.describe("accessibility", () => {
     "/auth/sign-in",
     "/auth/forgot-password",
     "/a/farmers-market-moves-indoors-5eed01", // seeded story (supabase/seed.sql)
+    "/c/community", // has the seeded story
+    "/latest",
   ]) {
     for (const scheme of ["light", "dark"] as const) {
       test(`${path} has no axe violations (${scheme})`, async ({ page }) => {
