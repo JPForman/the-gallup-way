@@ -29,7 +29,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 
 ## Phase 3 — Publishing
 - [x] 3.1 Migration: `categories` (+ seed), `articles`, `article_sources`, `article_images`, statuses, `can_publish_directly()`, rate-limit trigger; pgTAP (status RPCs `submit_article`/`withdraw_article`, `article-images` bucket)
-- [ ] 3.2 `src/lib/richtext`: Tiptap extension list + allowlist React renderer + plain-text extractor; unit tests incl. XSS cases
+- [x] 3.2 `src/lib/richtext`: Tiptap extension list + allowlist React renderer + plain-text extractor; unit tests incl. XSS cases
 - [ ] 3.3 Editor `/write`, `/edit/[id]`: drafts, images (compress, ≤3, caption/credit), sources
 - [ ] 3.4 Publish flow: Contributor Agreement checkbox → acceptance row → `pending_review` or `published`
 - [ ] 3.5 Migration: `article_revisions` trigger, `corrections`; author correction UI

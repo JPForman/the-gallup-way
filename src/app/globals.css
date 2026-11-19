@@ -98,3 +98,36 @@
     @apply outline-2 outline-offset-2 outline-ring;
   }
 }
+
+/* Article bodies: RichText output and the editor (.ProseMirror inside .richtext). */
+@layer components {
+  .richtext {
+    @apply text-[1.0625rem] leading-relaxed md:text-lg;
+  }
+  .richtext > * + *,
+  .richtext li > * + *,
+  .richtext blockquote > * + * {
+    @apply mt-4;
+  }
+  .richtext h2 {
+    @apply mt-8 font-serif text-2xl font-bold tracking-tight;
+  }
+  .richtext h3 {
+    @apply mt-6 font-serif text-xl font-bold;
+  }
+  .richtext ul {
+    @apply list-disc pl-6;
+  }
+  .richtext ol {
+    @apply list-decimal pl-6;
+  }
+  .richtext li + li {
+    @apply mt-1;
+  }
+  .richtext blockquote {
+    @apply border-l-4 border-brand pl-4 italic text-muted-foreground;
+  }
+  .richtext a {
+    @apply text-brand underline underline-offset-2 hover:no-underline;
+  }
+}
