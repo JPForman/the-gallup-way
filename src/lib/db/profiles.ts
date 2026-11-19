@@ -47,6 +47,13 @@ export async function getMyAccount(client: Client): Promise<MyAccount | null> {
   return data[0] ?? null;
 }
 
+/** How publishing goes for this writer (mirrors can_publish_directly()). */
+export function publishInfo(account: MyAccount | null): { direct: boolean; approvedCount: number } {
+  const approvedCount = account?.approved_article_count ?? 0;
+  const staff = account?.role === "moderator" || account?.role === "admin";
+  return { direct: staff || approvedCount >= 3, approvedCount };
+}
+
 export const AVATAR_BUCKET = "avatars";
 
 /** Public CDN URL for an avatar path (bucket is public-read). */

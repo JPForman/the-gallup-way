@@ -1,13 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import type { PostgrestError } from "@supabase/supabase-js";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
+import { clientIp, hashIp } from "@/lib/auth/ip-hash";
 import { ARTICLE_IMAGE_BUCKET, type SaveArticleResult } from "@/lib/db/articles";
 import type { FormState } from "@/lib/forms/state";
 import { createClient } from "@/lib/supabase/server";
-import type { Json } from "@/lib/supabase/types";
-import { parseArticleForm } from "@/lib/validation/article";
+import type { Database, Json } from "@/lib/supabase/types";
+import { parseArticleForm, publishProblems } from "@/lib/validation/article";
+
+type Client = SupabaseClient<Database>;
 
 function saveErrorMessage(error: PostgrestError): string {
   switch (error.code) {
@@ -24,15 +28,52 @@ function saveErrorMessage(error: PostgrestError): string {
   }
 }
 
+/** submit_article() raises user-facing messages for these codes. */
+function submitErrorMessage(error: PostgrestError): string {
+  if (["PT429", "23514", "42501"].includes(error.code)) return error.message;
+  if (error.code === "55000") return "This story has already been submitted.";
+  return "We couldn't publish your story. Please try again.";
+}
+
+/** Notices the edit page can show after a redirect (see EDIT_NOTICES). */
+export type EditNotice = "saved" | "review" | "published" | "withdrawn" | "publish-failed";
+
+function editUrl(id: string, notice: EditNotice): string {
+  return `/edit/${id}?notice=${notice}`;
+}
+
+/** Record the Contributor Agreement for this story, then submit it. */
+async function publish(
+  supabase: Client,
+  articleId: string,
+): Promise<{ ok: true; status: string; slug: string | null } | { ok: false; message: string }> {
+  // version and timestamp are set by the database (current version, now()).
+  const { error: acceptError } = await supabase.from("agreement_acceptances").insert({
+    kind: "contributor",
+    version: 0,
+    article_id: articleId,
+    ip_hash: hashIp(clientIp(await headers())),
+  });
+  if (acceptError) return { ok: false, message: "We couldn't record your agreement. Please try again." };
+
+  const { data: status, error } = await supabase.rpc("submit_article", { p_article_id: articleId });
+  if (error) return { ok: false, message: submitErrorMessage(error) };
+
+  const { data: row } = await supabase.from("articles").select("slug").eq("id", articleId).maybeSingle();
+  return { ok: true, status, slug: row?.slug ?? null };
+}
+
 /**
- * Save draft / save changes. Creating a story redirects to its edit page,
- * where photos can be added.
+ * Save draft / save changes / publish (intent=publish, drafts only).
+ * Creating a story redirects to its edit page, where photos can be added.
  */
 export async function saveArticle(_prev: FormState, formData: FormData): Promise<FormState> {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   const user = auth.user;
   if (!user) return { status: "error", message: "Please sign in again." };
+
+  const wantsPublish = formData.get("intent") === "publish";
 
   const parsed = parseArticleForm(formData, user.id);
   if (!parsed.ok) {
@@ -41,7 +82,15 @@ export async function saveArticle(_prev: FormState, formData: FormData): Promise
   const input = parsed.data;
   const isNew = !input.articleId;
 
-  if (isNew && input.title === "" && input.body.content.length === 0) {
+  if (wantsPublish) {
+    const problems = publishProblems(input);
+    if (formData.get("agreement") !== "on") {
+      problems.agreement = ["Agree to the Contributor Agreement to publish."];
+    }
+    if (Object.keys(problems).length) {
+      return { status: "error", message: "Your story isn't ready to publish yet.", fieldErrors: problems };
+    }
+  } else if (isNew && input.title === "" && input.body.content.length === 0) {
     return { status: "error", message: "Add a headline or some text before saving." };
   }
 
@@ -65,17 +114,43 @@ export async function saveArticle(_prev: FormState, formData: FormData): Promise
   }
 
   revalidatePath("/write");
+
+  if (wantsPublish && result.status === "draft") {
+    const published = await publish(supabase, result.id);
+    if (!published.ok) {
+      if (isNew) redirect(editUrl(result.id, "publish-failed"));
+      return { status: "error", message: `Your changes were saved, but the story wasn't published. ${published.message}` };
+    }
+    if (published.status === "published") {
+      revalidatePath("/");
+      if (published.slug) revalidatePath(`/a/${published.slug}`);
+    }
+    redirect(editUrl(result.id, published.status === "published" ? "published" : "review"));
+  }
+
   if (result.status === "published" && result.slug) {
     revalidatePath(`/a/${result.slug}`);
     revalidatePath("/");
   }
 
-  if (isNew) redirect(`/edit/${result.id}?saved=1`);
+  if (isNew) redirect(editUrl(result.id, "saved"));
 
   return {
     status: "success",
     message: result.status === "draft" ? "Draft saved." : "Changes saved.",
   };
+}
+
+/** Pull a story out of the review queue so it can be edited as a draft. */
+export async function withdrawArticle(formData: FormData): Promise<void> {
+  const id = String(formData.get("articleId") ?? "");
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) redirect(`/auth/sign-in?next=/edit/${encodeURIComponent(id)}`);
+
+  const { error } = await supabase.rpc("withdraw_article", { p_article_id: id });
+  revalidatePath("/write");
+  redirect(error ? `/edit/${id}` : editUrl(id, "withdrawn"));
 }
 
 /** Permanently delete a never-submitted draft and its photo files. */

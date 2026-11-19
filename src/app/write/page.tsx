@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FormMessage } from "@/components/forms/form-message";
 import { listMyArticles, STATUS_LABELS } from "@/lib/db/articles";
-import { getMyAccount } from "@/lib/db/profiles";
+import { getMyAccount, publishInfo } from "@/lib/db/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { ArticleForm } from "./article-form";
 import { CannotWrite } from "./cannot-write";
@@ -48,6 +48,8 @@ export default async function WritePage({
         {account?.can_write ? (
           <ArticleForm
             userId={data.user.id}
+            status="draft"
+            publish={publishInfo(account)}
             initial={{
               articleId: null,
               title: "",
