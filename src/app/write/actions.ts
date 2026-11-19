@@ -124,6 +124,7 @@ export async function saveArticle(_prev: FormState, formData: FormData): Promise
     }
     if (published.status === "published") {
       revalidatePath("/");
+      revalidatePath("/latest");
       if (published.slug) revalidatePath(`/a/${published.slug}`);
     }
     redirect(editUrl(result.id, published.status === "published" ? "published" : "review"));
@@ -132,6 +133,7 @@ export async function saveArticle(_prev: FormState, formData: FormData): Promise
   if (result.status === "published" && result.slug) {
     revalidatePath(`/a/${result.slug}`);
     revalidatePath("/");
+    revalidatePath("/latest");
   }
 
   if (isNew) redirect(editUrl(result.id, "saved"));

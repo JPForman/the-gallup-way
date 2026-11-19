@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 4.1** + grants fix (`20261120020000_explicit_table_grants.sql`: the cloud had no default table privileges, so categories/sources/images/agreements were unreadable and the 4.1 production build failed). The home page is prerendered from `feed_latest`, so push migrations before merging DB changes the build reads. Local: 211 pgTAP checks, 139 unit tests, 90 Playwright tests (1 skipped on mobile).
-- **Next: 4.2 views + Top Stories.** `article_views (article_id, day date, views int, primary key (article_id, day))` daily aggregate, incremented by a SECURITY DEFINER RPC `record_view(p_article_id)` (published only; called once per page view from a small client component on `/a/[slug]`, since the page itself is cached; consider skipping bots and the author). `top_stories(p_limit)` SQL function: score = (likes + 2*comments + views/25) / (hours_since_publish + 2)^1.5 over 7 days (likes/comments are 0 until Phase 5; write it so they plug in). Mirror in `src/lib/ranking.ts` with unit tests. Home gets Top / Latest tabs (Following in 5.3).
+- **Done through 4.2.** Push `20261120030000_views_and_top_stories.sql` to the cloud BEFORE merging (the home page is prerendered from `top_stories`). Rule: when the build reads a new DB function, push first. Local: 227 pgTAP checks, 148 unit tests, 92 Playwright tests (2 desktop-only).
+- **Next: 4.3 category pages `/c/[slug]`** (the header's category strip already links there). ISR, `generateStaticParams` from `CATEGORIES` (8 known slugs, so prerender them all) + `dynamicParams = false` (unknown → 404). Use `listLatestArticles(client, { category })` (feed_latest already filters by category) with the same `FrontPage` layout, heading = category name, and cursor pages `/c/[slug]/[cursor]` (or reuse a shared paginated component). Mark the active category in the header strip (`aria-current`). Publishing/editing should also `revalidatePath('/c/<category>')`.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -42,7 +42,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 
 ## Phase 4 — News experience
 - [x] 4.1 Home layout (lead + grid desktop, single column mobile), Latest feed, cursor pagination
-- [ ] 4.2 `article_views` daily aggregate + RPC; `top_stories` SQL function + `src/lib/ranking.ts` with tests
+- [x] 4.2 `article_views` daily aggregate + RPC; `top_stories` SQL function + `src/lib/ranking.ts` with tests
 - [ ] 4.3 Category pages `/c/[slug]`
 - [ ] 4.4 Search `/search` (full-text stories + writers)
 
