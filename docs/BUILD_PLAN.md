@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 3.4** (merged; cloud DB migrated through `20261119020000_save_article.sql`; 3.4 had no migration). Local: 162 pgTAP checks, 118 unit tests, 74 Playwright tests.
-- **Next: 3.5 revisions + corrections** (new migration). `article_revisions` (article_id, title, dek, body_json, edited_by, created_at): a trigger snapshots the previous title/dek/body on any content update after the story has been published (`published_at is not null`); readable by staff only (RLS), no client writes. `corrections` (article_id, body plain text ≤ 1000, created_by, created_at): the author (while `can_write()`) or staff can add to a published story; public read when the story is visible; append-only. Author UI on `/edit/[id]` for published stories: "Add a correction" form + list. pgTAP + e2e. Then 3.6, the article page `/a/[slug]` (the "View story" link and `revalidatePath('/a/<slug>')` already point there).
+- **Done through 3.5** (cloud DB migrated through `20261119030000_revisions_and_corrections.sql`). Local: 192 pgTAP checks, 125 unit tests, 76 Playwright tests.
+- **Next: 3.6 article page `/a/[slug]`** (ISR: `createPublicClient()`, `generateStaticParams() { return [] }`, `revalidate = 60`; the editor's "View story" link and `revalidatePath('/a/<slug>')` already point there). Headline, dek, byline "By {display_name} · Posted by a community member" + the not-verified disclaimer, "Opinion" label, category, published date (and "Updated" when edited later), images with caption/credit, `<RichText>` body, sources list, corrections via `listCorrections` + `<CorrectionsList>`. 404 for non-visible stories. Add `/a/<seeded slug>` to the smoke axe list (needs a published story in `seed.sql`). e2e: publish → open the article → see byline, disclaimer, correction.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -37,7 +37,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 3.2 `src/lib/richtext`: Tiptap extension list + allowlist React renderer + plain-text extractor; unit tests incl. XSS cases
 - [x] 3.3 Editor `/write`, `/edit/[id]`: drafts, images (compress, ≤3, caption/credit), sources
 - [x] 3.4 Publish flow: Contributor Agreement checkbox → acceptance row → `pending_review` or `published`
-- [ ] 3.5 Migration: `article_revisions` trigger, `corrections`; author correction UI
+- [x] 3.5 Migration: `article_revisions` trigger, `corrections`; author correction UI
 - [ ] 3.6 Article page `/a/[slug]`: byline, disclaimer, labels, images, sources, corrections; ISR + tags
 
 ## Phase 4 — News experience
