@@ -205,3 +205,10 @@ export async function listLatestArticles(
     next: rows.length > FEED_PAGE_SIZE && last ? { publishedAt: last.published_at, id: last.id } : null,
   };
 }
+
+/** Top Stories (top_stories()): last 7 days, best score first. Same shape as the Latest feed. */
+export async function listTopArticles(client: Client, limit = FEED_PAGE_SIZE): Promise<FeedItem[]> {
+  const { data, error } = await client.rpc("top_stories", { p_limit: limit });
+  if (error) throw error;
+  return (data ?? []) as unknown as FeedItem[];
+}

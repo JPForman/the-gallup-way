@@ -215,6 +215,32 @@ export type Database = {
           },
         ]
       }
+      article_views: {
+        Row: {
+          article_id: string
+          day: string
+          views: number
+        }
+        Insert: {
+          article_id: string
+          day?: string
+          views?: number
+        }
+        Update: {
+          article_id?: string
+          day?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_views_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       articles: {
         Row: {
           author_id: string | null
@@ -454,6 +480,16 @@ export type Database = {
           suspended_until: string
         }[]
       }
+      ranking_score: {
+        Args: {
+          p_comments: number
+          p_hours: number
+          p_likes: number
+          p_views: number
+        }
+        Returns: number
+      }
+      record_view: { Args: { p_article_id: string }; Returns: boolean }
       richtext_plain: { Args: { node: Json }; Returns: string }
       save_article: {
         Args: {
@@ -472,6 +508,24 @@ export type Database = {
       submit_article: {
         Args: { p_article_id: string }
         Returns: Database["public"]["Enums"]["article_status"]
+      }
+      top_stories: {
+        Args: { p_limit?: number }
+        Returns: {
+          author_display_name: string
+          author_handle: string
+          category: string
+          content_type: Database["public"]["Enums"]["content_type"]
+          dek: string
+          excerpt: string
+          id: string
+          image_alt: string
+          image_path: string
+          published_at: string
+          score: number
+          slug: string
+          title: string
+        }[]
       }
       withdraw_article: {
         Args: { p_article_id: string }

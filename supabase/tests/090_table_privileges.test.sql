@@ -12,6 +12,7 @@ insert into expected values
   ('article_images',        'S---', 'SIUD'),
   ('article_revisions',     '----', 'S---'),
   ('article_sources',       'S---', 'SIUD'),
+  ('article_views',         'S---', 'S---'),
   ('articles',              'S---', 'SIUD'),
   ('categories',            'S---', 'S---'),
   ('corrections',           'S---', 'SI--'),
