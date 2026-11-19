@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { PenLine, Search } from "lucide-react";
 import { AuthControls } from "@/components/auth-controls";
+import { CategoryNav } from "@/components/category-nav";
 import { DateLine } from "@/components/date-line";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { NAV_CATEGORIES, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
 export function SiteHeader() {
   return (
@@ -43,20 +44,7 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <nav aria-label="Categories" className="border-t border-border">
-        <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-2 [scrollbar-width:none] md:justify-center">
-          {NAV_CATEGORIES.map((c) => (
-            <li key={c.href} className="shrink-0">
-              <Link
-                href={c.href}
-                className="inline-flex h-11 items-center px-3 text-sm font-semibold tracking-wide uppercase hover:text-brand"
-              >
-                {c.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <CategoryNav />
     </header>
   );
 }

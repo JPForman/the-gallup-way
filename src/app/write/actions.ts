@@ -7,6 +7,7 @@ import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { clientIp, hashIp } from "@/lib/auth/ip-hash";
 import { ARTICLE_IMAGE_BUCKET, type SaveArticleResult } from "@/lib/db/articles";
 import { fieldErrorsOf, type FormState } from "@/lib/forms/state";
+import { CATEGORIES } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import type { Database, Json } from "@/lib/supabase/types";
 import { parseArticleForm, publishProblems } from "@/lib/validation/article";
@@ -34,6 +35,17 @@ function submitErrorMessage(error: PostgrestError): string {
   if (["PT429", "23514", "42501"].includes(error.code)) return error.message;
   if (error.code === "55000") return "This story has already been submitted.";
   return "We couldn't publish your story. Please try again.";
+}
+
+/**
+ * Refresh the cached public pages a published story appears on. All category
+ * pages are refreshed, since an edit may have moved the story to another one.
+ */
+function revalidatePublicPages(slug: string | null) {
+  revalidatePath("/");
+  revalidatePath("/latest");
+  for (const c of CATEGORIES) revalidatePath(`/c/${c.slug}`);
+  if (slug) revalidatePath(`/a/${slug}`);
 }
 
 /** Notices the edit page can show after a redirect (see EDIT_NOTICES). */
@@ -122,19 +134,11 @@ export async function saveArticle(_prev: FormState, formData: FormData): Promise
       if (isNew) redirect(editUrl(result.id, "publish-failed"));
       return { status: "error", message: `Your changes were saved, but the story wasn't published. ${published.message}` };
     }
-    if (published.status === "published") {
-      revalidatePath("/");
-      revalidatePath("/latest");
-      if (published.slug) revalidatePath(`/a/${published.slug}`);
-    }
+    if (published.status === "published") revalidatePublicPages(published.slug);
     redirect(editUrl(result.id, published.status === "published" ? "published" : "review"));
   }
 
-  if (result.status === "published" && result.slug) {
-    revalidatePath(`/a/${result.slug}`);
-    revalidatePath("/");
-    revalidatePath("/latest");
-  }
+  if (result.status === "published") revalidatePublicPages(result.slug);
 
   if (isNew) redirect(editUrl(result.id, "saved"));
 
