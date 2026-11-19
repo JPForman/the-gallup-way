@@ -2,6 +2,11 @@
 
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
+## Current status (update at the end of each session)
+- **Done through 3.3** (merged, cloud DB migrated through `20261119020000_save_article.sql`). Local DB: 162 pgTAP checks; 116 unit tests; 68 Playwright tests.
+- **Next: 3.4 publish flow.** Already in the DB (3.1): `submit_article(id)` (needs a complete story + a current Contributor Agreement acceptance row for that article; returns `pending_review` or `published`; 5/day `PT429`), `withdraw_article(id)`, and the acceptance insert policy (`article_id` must be the caller's editable story). To build: on `/edit/[id]` for drafts, a "Publish" section with the Contributor Agreement checkbox (link `/legal/contributor-agreement`, version from `src/content/agreements.ts`), a Server Action that saves, inserts the acceptance (with `ip_hash` via `hashIp(clientIp(headers))`) and calls `submit_article`, then shows "Sent for review" or "Published"; a "Withdraw from review" button for `pending_review`; status-specific messages and errors (incomplete story, limit); e2e for both a new contributor (→ review) and a contributor with 3 approvals (set via `e2e/helpers/db.ts`) (→ published).
+- **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
+
 ## Phase 1 — Foundation
 - [x] 1.1 `git init`, scaffold Next.js (App Router, TS strict, Tailwind, ESLint), pnpm, `images.unoptimized`, `src/lib/site.ts`
 - [x] 1.2 shadcn/ui setup, base layout (masthead, footer with legal links, mobile bottom nav), dark mode, legal page stubs
