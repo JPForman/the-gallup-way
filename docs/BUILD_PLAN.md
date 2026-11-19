@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 3.6** (cloud DB: push `20261120000000_article_edited_at.sql` after merge). Local: 198 pgTAP checks, 132 unit tests, 84 Playwright tests. Phase 3 complete.
-- **Next: 4.1 home layout** (`src/app/page.tsx` → lead story + grid on desktop, single column on mobile; Latest feed with cursor pagination, 20 per page, on `published_at desc, id`; ISR + `revalidatePath('/')` already called on publish). Card: kicker (`articleKicker`), headline, dek/excerpt, byline, date, lead-image thumbnail. Add a `listLatestArticles(client, cursor)` helper in `src/lib/db/articles.ts` using `articles_feed_idx`. Top/Following tabs come with 4.2/5.3.
+- **Done through 4.1.** Cloud DB must have `20261120000000_article_edited_at.sql` and `20261120010000_feed_latest.sql` (the home page is built from `feed_latest`, so a Vercel build fails without it). Local: 208 pgTAP checks, 139 unit tests, 90 Playwright tests (1 skipped on mobile).
+- **Next: 4.2 views + Top Stories.** `article_views (article_id, day date, views int, primary key (article_id, day))` daily aggregate, incremented by a SECURITY DEFINER RPC `record_view(p_article_id)` (published only; called once per page view from a small client component on `/a/[slug]`, since the page itself is cached; consider skipping bots and the author). `top_stories(p_limit)` SQL function: score = (likes + 2*comments + views/25) / (hours_since_publish + 2)^1.5 over 7 days (likes/comments are 0 until Phase 5; write it so they plug in). Mirror in `src/lib/ranking.ts` with unit tests. Home gets Top / Latest tabs (Following in 5.3).
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -41,7 +41,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 3.6 Article page `/a/[slug]`: byline, disclaimer, labels, images, sources, corrections; ISR + tags
 
 ## Phase 4 — News experience
-- [ ] 4.1 Home layout (lead + grid desktop, single column mobile), Latest feed, cursor pagination
+- [x] 4.1 Home layout (lead + grid desktop, single column mobile), Latest feed, cursor pagination
 - [ ] 4.2 `article_views` daily aggregate + RPC; `top_stories` SQL function + `src/lib/ranking.ts` with tests
 - [ ] 4.3 Category pages `/c/[slug]`
 - [ ] 4.4 Search `/search` (full-text stories + writers)
