@@ -19,16 +19,16 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 2.2 Migration: `agreement_versions`, `agreement_acceptances`; seed v1 Terms/Privacy/Contributor versions; pgTAP
 - [x] 2.2b Re-accept prompt: when a signed-in user hasn't accepted the current Terms or Privacy, show a banner or page to re-accept (do with 2.3/2.5)
 - [x] 2.3 Sign-up (18+, Terms+Privacy), sign-in, callback, reset, sign-out; Zod schemas; e2e with local Inbucket
-- [ ] 2.3b Cloud auth settings (operator, Supabase dashboard + Vercel):
-  - [ ] Authentication → URL Configuration: Site URL `https://the-gallup-way.vercel.app`; Redirect URLs `https://the-gallup-way.vercel.app/**`, `https://*-joshs-projects-127d9499.vercel.app/**` (previews), `http://localhost:3000/**`
-  - [ ] Authentication → Email Templates: paste `supabase/templates/confirmation.html` (Confirm signup) and `recovery.html` (Reset password), with the subjects from `config.toml`
-  - [ ] Authentication → Providers → Email: Confirm email ON, minimum password length 8, secure password change ON
-  - [ ] Vercel env var `IP_HASH_SALT` (random, `openssl rand -hex 32`), then redeploy
+- [x] 2.3b Cloud auth settings (operator, Supabase dashboard + Vercel):
+  - [x] Authentication → URL Configuration: Site URL `https://the-gallup-way.vercel.app`; Redirect URLs `https://the-gallup-way.vercel.app/**`, `https://*-joshs-projects-127d9499.vercel.app/**` (previews), `http://localhost:3000/**`
+  - [x] Authentication → Email Templates: paste `supabase/templates/confirmation.html` (Confirm signup) and `recovery.html` (Reset password), with the subjects from `config.toml`
+  - [x] Authentication → Providers → Email: Confirm email ON, minimum password length 8, secure password change ON
+  - [x] Vercel env var `IP_HASH_SALT` (random, `openssl rand -hex 32`), then redeploy
 - [ ] 2.4 Resend as Supabase SMTP (cloud). Until then the default mailer sends only ~2 emails/hour
 - [x] 2.5 Profile page `/u/[handle]`, settings page (edit profile, avatar upload with compression, Storage policies)
 
 ## Phase 3 — Publishing
-- [ ] 3.1 Migration: `categories` (+ seed), `articles`, `article_sources`, `article_images`, statuses, `can_publish_directly()`, rate-limit trigger; pgTAP
+- [x] 3.1 Migration: `categories` (+ seed), `articles`, `article_sources`, `article_images`, statuses, `can_publish_directly()`, rate-limit trigger; pgTAP (status RPCs `submit_article`/`withdraw_article`, `article-images` bucket)
 - [ ] 3.2 `src/lib/richtext`: Tiptap extension list + allowlist React renderer + plain-text extractor; unit tests incl. XSS cases
 - [ ] 3.3 Editor `/write`, `/edit/[id]`: drafts, images (compress, ≤3, caption/credit), sources
 - [ ] 3.4 Publish flow: Contributor Agreement checkbox → acceptance row → `pending_review` or `published`

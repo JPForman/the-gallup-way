@@ -20,16 +20,24 @@ export const LEGAL_LINKS: NavLink[] = [
 ];
 
 /**
- * Placeholder category strip. Replaced by the `categories` table in step 3.1;
- * keep slugs in sync with supabase/seed.sql when that lands.
+ * Story categories, in display order. Mirrors the `categories` table
+ * (migration 20261119010000_articles.sql); src/lib/site.test.ts keeps them in
+ * sync. Kept here so the header needs no database read.
  */
-export const NAV_CATEGORIES: NavLink[] = [
-  { href: "/c/news", label: "News" },
-  { href: "/c/community", label: "Community" },
-  { href: "/c/government", label: "Government" },
-  { href: "/c/education", label: "Education" },
-  { href: "/c/sports", label: "Sports" },
-  { href: "/c/events", label: "Events" },
-  { href: "/c/business", label: "Business" },
-  { href: "/c/opinion", label: "Opinion" },
-];
+export const CATEGORIES = [
+  { slug: "news", name: "News" },
+  { slug: "community", name: "Community" },
+  { slug: "government", name: "Government" },
+  { slug: "education", name: "Education" },
+  { slug: "sports", name: "Sports" },
+  { slug: "events", name: "Events" },
+  { slug: "business", name: "Business" },
+  { slug: "opinion", name: "Opinion" },
+] as const;
+
+export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
+
+export const NAV_CATEGORIES: NavLink[] = CATEGORIES.map((c) => ({
+  href: `/c/${c.slug}`,
+  label: c.name,
+}));
