@@ -155,4 +155,14 @@ insert into public.corrections (article_id, body, created_by, created_at) values
    'An earlier version said the fair runs until 5 p.m. It closes at 4 p.m. both days.',
    '5a5a0000-0000-4000-8000-000000000003', now() - interval '20 hours');
 
+-- A few likes between the sample writers (nobody likes their own story).
+insert into public.reactions (article_id, user_id)
+select a.id, u.id
+from public.articles a
+cross join (values ('5a5a0000-0000-4000-8000-000000000001'::uuid), ('5a5a0000-0000-4000-8000-000000000002'::uuid),
+                   ('5a5a0000-0000-4000-8000-000000000003'::uuid)) u(id)
+where a.id::text like '5a5a0000-0000-4000-8000-0000000001%'
+  and a.author_id <> u.id
+  and right(a.id::text, 2)::int in (1, 2, 5, 6, 8, 12);
+
 select count(*) as sample_stories from public.articles where id::text like '5a5a0000-0000-4000-8000-0000000001%';

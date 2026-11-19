@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { CorrectionsList } from "@/components/corrections-list";
 import type { PublicArticle } from "@/lib/db/articles";
 import { RichText, safeHref, UGC_LINK_REL } from "@/lib/richtext";
@@ -53,9 +54,12 @@ function Figure({ image, src, lead }: { image: Image; src: string; lead?: boolea
 export function ArticleView({
   article,
   imageUrl,
+  actions,
 }: {
   article: PublicArticle;
   imageUrl: (path: string) => string;
+  /** Interactive controls (like button) shown after the story. */
+  actions?: ReactNode;
 }) {
   const [lead, ...moreImages] = article.images;
   const opinion = isOpinion(article);
@@ -123,6 +127,8 @@ export function ArticleView({
       {moreImages.map((img) => (
         <Figure key={img.storage_path} image={img} src={imageUrl(img.storage_path)} />
       ))}
+
+      {actions ? <div className="mt-8">{actions}</div> : null}
 
       {article.sources.length ? (
         <section aria-labelledby="sources-heading" className="mt-10 border-t border-rule pt-6">
