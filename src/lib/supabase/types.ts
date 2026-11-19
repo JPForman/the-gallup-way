@@ -64,6 +64,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "agreement_acceptances_article_fk"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "agreement_acceptances_kind_version_fkey"
             columns: ["kind", "version"]
             isOneToOne: false
@@ -90,6 +97,169 @@ export type Database = {
           kind?: Database["public"]["Enums"]["agreement_kind"]
           text_sha256?: string
           version?: number
+        }
+        Relationships: []
+      }
+      article_images: {
+        Row: {
+          alt_text: string
+          article_id: string
+          caption: string | null
+          credit: string | null
+          id: number
+          position: number
+          storage_path: string
+        }
+        Insert: {
+          alt_text?: string
+          article_id: string
+          caption?: string | null
+          credit?: string | null
+          id?: never
+          position: number
+          storage_path: string
+        }
+        Update: {
+          alt_text?: string
+          article_id?: string
+          caption?: string | null
+          credit?: string | null
+          id?: never
+          position?: number
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_images_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      article_sources: {
+        Row: {
+          article_id: string
+          id: number
+          label: string | null
+          position: number
+          url: string
+        }
+        Insert: {
+          article_id: string
+          id?: never
+          label?: string | null
+          position: number
+          url: string
+        }
+        Update: {
+          article_id?: string
+          id?: never
+          label?: string | null
+          position?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_sources_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      articles: {
+        Row: {
+          author_id: string | null
+          body_json: Json
+          body_text: string
+          category: string | null
+          comments_locked: boolean
+          content_type: Database["public"]["Enums"]["content_type"]
+          created_at: string
+          dek: string | null
+          deleted_at: string | null
+          id: string
+          published_at: string | null
+          search: unknown
+          slug: string | null
+          status: Database["public"]["Enums"]["article_status"]
+          submitted_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body_json?: Json
+          body_text?: string
+          category?: string | null
+          comments_locked?: boolean
+          content_type?: Database["public"]["Enums"]["content_type"]
+          created_at?: string
+          dek?: string | null
+          deleted_at?: string | null
+          id?: string
+          published_at?: string | null
+          search?: unknown
+          slug?: string | null
+          status?: Database["public"]["Enums"]["article_status"]
+          submitted_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body_json?: Json
+          body_text?: string
+          category?: string | null
+          comments_locked?: boolean
+          content_type?: Database["public"]["Enums"]["content_type"]
+          created_at?: string
+          dek?: string | null
+          deleted_at?: string | null
+          id?: string
+          published_at?: string | null
+          search?: unknown
+          slug?: string | null
+          status?: Database["public"]["Enums"]["article_status"]
+          submitted_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "articles_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "articles_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          name: string
+          slug: string
+          sort: number
+        }
+        Insert: {
+          name: string
+          slug: string
+          sort: number
+        }
+        Update: {
+          name?: string
+          slug?: string
+          sort?: number
         }
         Relationships: []
       }
@@ -140,7 +310,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_edit_article: { Args: { p_article_id: string }; Returns: boolean }
       can_publish_directly: { Args: never; Returns: boolean }
+      can_view_article: { Args: { p_article_id: string }; Returns: boolean }
       can_write: { Args: never; Returns: boolean }
       current_agreement_version: {
         Args: { k: Database["public"]["Enums"]["agreement_kind"] }
@@ -172,9 +344,32 @@ export type Database = {
           suspended_until: string
         }[]
       }
+      richtext_plain: { Args: { node: Json }; Returns: string }
+      slugify: { Args: { t: string }; Returns: string }
+      submit_article: {
+        Args: { p_article_id: string }
+        Returns: Database["public"]["Enums"]["article_status"]
+      }
+      withdraw_article: {
+        Args: { p_article_id: string }
+        Returns: Database["public"]["Enums"]["article_status"]
+      }
     }
     Enums: {
       agreement_kind: "terms" | "privacy" | "contributor"
+      article_status:
+        | "draft"
+        | "pending_review"
+        | "published"
+        | "hidden"
+        | "archived"
+      content_type:
+        | "news"
+        | "community"
+        | "opinion"
+        | "event"
+        | "sports"
+        | "business"
       user_role: "user" | "moderator" | "admin"
     }
     CompositeTypes: {
@@ -307,6 +502,21 @@ export const Constants = {
   public: {
     Enums: {
       agreement_kind: ["terms", "privacy", "contributor"],
+      article_status: [
+        "draft",
+        "pending_review",
+        "published",
+        "hidden",
+        "archived",
+      ],
+      content_type: [
+        "news",
+        "community",
+        "opinion",
+        "event",
+        "sports",
+        "business",
+      ],
       user_role: ["user", "moderator", "admin"],
     },
   },
