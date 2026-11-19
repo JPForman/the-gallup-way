@@ -3,7 +3,7 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 4.1.** Cloud DB must have `20261120000000_article_edited_at.sql` and `20261120010000_feed_latest.sql` (the home page is built from `feed_latest`, so a Vercel build fails without it). Local: 208 pgTAP checks, 139 unit tests, 90 Playwright tests (1 skipped on mobile).
+- **Done through 4.1** + grants fix (`20261120020000_explicit_table_grants.sql`: the cloud had no default table privileges, so categories/sources/images/agreements were unreadable and the 4.1 production build failed). The home page is prerendered from `feed_latest`, so push migrations before merging DB changes the build reads. Local: 211 pgTAP checks, 139 unit tests, 90 Playwright tests (1 skipped on mobile).
 - **Next: 4.2 views + Top Stories.** `article_views (article_id, day date, views int, primary key (article_id, day))` daily aggregate, incremented by a SECURITY DEFINER RPC `record_view(p_article_id)` (published only; called once per page view from a small client component on `/a/[slug]`, since the page itself is cached; consider skipping bots and the author). `top_stories(p_limit)` SQL function: score = (likes + 2*comments + views/25) / (hours_since_publish + 2)^1.5 over 7 days (likes/comments are 0 until Phase 5; write it so they plug in). Mirror in `src/lib/ranking.ts` with unit tests. Home gets Top / Latest tabs (Following in 5.3).
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
