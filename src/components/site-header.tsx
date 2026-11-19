@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PenLine, Search } from "lucide-react";
+import { AuthControls } from "@/components/auth-controls";
 import { DateLine } from "@/components/date-line";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -18,9 +19,7 @@ export function SiteHeader() {
               </Link>
             </Button>
             <ThemeToggle />
-            <Button asChild variant="outline" className="ml-1 hidden h-11 md:inline-flex">
-              <Link href="/auth/sign-in">Sign in</Link>
-            </Button>
+            <AuthControls />
             <Button
               asChild
               className="ml-2 hidden h-11 bg-brand text-brand-foreground hover:bg-brand/90 md:inline-flex"

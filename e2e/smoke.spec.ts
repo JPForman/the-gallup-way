@@ -45,7 +45,7 @@ test.describe("layout shell", () => {
 });
 
 test.describe("accessibility", () => {
-  for (const path of ["/", "/legal/terms", "/contact"]) {
+  for (const path of ["/", "/legal/terms", "/contact", "/auth/sign-up", "/auth/sign-in", "/auth/forgot-password"]) {
     for (const scheme of ["light", "dark"] as const) {
       test(`${path} has no axe violations (${scheme})`, async ({ page }) => {
         await page.emulateMedia({ colorScheme: scheme });

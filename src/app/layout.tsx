@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { BottomNav } from "@/components/bottom-nav";
+import { HydrationMarker } from "@/components/hydration-marker";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -43,6 +44,7 @@ export default function RootLayout({
             <SiteFooter />
           </div>
           <BottomNav />
+          <HydrationMarker />
         </ThemeProvider>
       </body>
     </html>
