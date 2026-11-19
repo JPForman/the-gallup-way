@@ -212,3 +212,21 @@ export async function listTopArticles(client: Client, limit = FEED_PAGE_SIZE): P
   if (error) throw error;
   return (data ?? []) as unknown as FeedItem[];
 }
+
+export const SEARCH_PAGE_SIZE = 20;
+
+/** Full-text story search (search_articles()), best match first. */
+export async function searchArticles(
+  client: Client,
+  query: string,
+  page = 1,
+): Promise<{ items: FeedItem[]; hasMore: boolean }> {
+  const { data, error } = await client.rpc("search_articles", {
+    p_query: query,
+    p_limit: SEARCH_PAGE_SIZE + 1,
+    p_offset: (page - 1) * SEARCH_PAGE_SIZE,
+  });
+  if (error) throw error;
+  const rows = (data ?? []) as unknown as FeedItem[];
+  return { items: rows.slice(0, SEARCH_PAGE_SIZE), hasMore: rows.length > SEARCH_PAGE_SIZE };
+}
