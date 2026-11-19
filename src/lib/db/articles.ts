@@ -163,3 +163,45 @@ export async function getPublishedArticle(client: Client, slug: string): Promise
     corrections: [...corrections].sort((a, b) => a.created_at.localeCompare(b.created_at)),
   };
 }
+
+/** One story in a feed (from feed_latest()). */
+export type FeedItem = {
+  id: string;
+  slug: string;
+  title: string;
+  dek: string | null;
+  excerpt: string;
+  category: string | null;
+  content_type: Database["public"]["Enums"]["content_type"];
+  published_at: string;
+  author_handle: string | null;
+  author_display_name: string | null;
+  image_path: string | null;
+  image_alt: string | null;
+};
+
+export const FEED_PAGE_SIZE = 20;
+
+/**
+ * A page of the Latest feed, newest first. `next` is the cursor for the
+ * following page, or null on the last page.
+ */
+export async function listLatestArticles(
+  client: Client,
+  opts: { before?: { publishedAt: string; id: string }; category?: string } = {},
+): Promise<{ items: FeedItem[]; next: { publishedAt: string; id: string } | null }> {
+  const { data, error } = await client.rpc("feed_latest", {
+    p_before_published_at: opts.before?.publishedAt,
+    p_before_id: opts.before?.id,
+    p_category: opts.category,
+    p_limit: FEED_PAGE_SIZE + 1,
+  });
+  if (error) throw error;
+  const rows = (data ?? []) as unknown as FeedItem[];
+  const items = rows.slice(0, FEED_PAGE_SIZE);
+  const last = items.at(-1);
+  return {
+    items,
+    next: rows.length > FEED_PAGE_SIZE && last ? { publishedAt: last.published_at, id: last.id } : null,
+  };
+}
