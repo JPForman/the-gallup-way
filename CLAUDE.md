@@ -16,7 +16,7 @@ The site name lives in one constant: `src/lib/site.ts` → `SITE_NAME = "The Gal
 |---|---|---|
 | Framework | Next.js 15 (App Router) + React + TypeScript (strict) | Server Components by default, Server Actions for mutations |
 | Styling | Tailwind CSS | Mobile-first: design at 375px, then scale up |
-| UI parts | shadcn/ui (copy-in components, `src/components/ui`) | No heavy UI kits. `cn()` = `clsx` + `tailwind-merge` in `src/lib/utils.ts` |
+| UI parts | shadcn/ui (copy-in components, `src/components/ui`) | No heavy UI kits. `cn()` = `clsx` + `tailwind-merge` in `src/lib/utils.ts`. Add components with `pnpm ui:add <name>` (undoes the CLI's switch to the `cn` package). Use native `<input type="checkbox">` (`CheckboxField`), not shadcn's button-based checkbox |
 | Theming | `next-themes` (class strategy, defaults to system) | Colors are CSS tokens in `src/app/globals.css`: newsprint neutrals + `brand` (red-rock accent); serif (Source Serif 4) for headlines, Inter for UI |
 | Rich text | Tiptap (limited extensions) | Stored as JSON; rendered via allowlist renderer (see Coding rules) |
 | Database + Auth + Storage | Supabase (free plan) | Postgres, email-verified auth, Row Level Security, Storage |
@@ -110,6 +110,8 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - `integration` job: starts local Supabase, fails if `src/lib/supabase/types.ts` is stale (run `pnpm db:types` and commit), runs pgTAP, builds, runs Playwright (report uploaded on failure).
 - Runners pinned to `ubuntu-24.04`: `ubuntu-latest` is 26.04, which Playwright 1.56 doesn't support. Unpin after a Playwright upgrade.
 - Node 22 in CI. Local Node 20 still works, but Node 20 reached end-of-life in April 2026, so upgrade to 22 or 24 LTS.
+- E2E helpers: `gotoReady(page, path)` waits for `<html data-hydrated>` (set by `HydrationMarker`) before using forms. `authLinkFromEmail(to, subject)` reads Mailpit and returns the `/auth/confirm` path. Use `uniqueEmail()` per test. Scope `role=alert`/`status` queries to `main`, because Next's dev route announcer also uses `role=alert`.
+- Local `supabase/config.toml` raises auth rate limits (email, sign-in, verification) for e2e. Cloud limits are separate (Dashboard → Authentication → Rate Limits).
 - Every e2e page check includes an axe accessibility scan in light and dark mode (`e2e/smoke.spec.ts`); new pages should be added to that list.
 
 ## Environment
@@ -118,6 +120,15 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - Supabase clients: `src/lib/supabase/server.ts` (Server Components/Actions, `server-only`), `client.ts` (Client Components), `middleware.ts` (`updateSession`, called by `src/middleware.ts`; matcher skips static assets and `/legal/*` to save invocations).
 - Known harmless build warning: supabase-js references `process.version(s)` in the Edge runtime (guarded in the library).
 - pnpm only runs install scripts for packages in `package.json` → `pnpm.onlyBuiltDependencies` (currently `supabase`, which downloads the CLI binary).
+
+## Auth (`src/app/auth/`)
+- Server Actions in `src/app/auth/actions.ts`: `signUp`, `signIn`, `signOut`, `requestPasswordReset`, `updatePassword`. They return `FormState` (`message`, `status`, `fieldErrors`, `values` echo without passwords) for `useActionState` forms.
+- Email links use `token_hash` templates (`supabase/templates/*.html`) pointing to `GET /auth/confirm` (`verifyOtp`), so links work on any device. Don't use the default PKCE `?code=` flow.
+- Sign-up sends `handle`, `display_name`, `age_confirmed`, `accepted_terms_version`, `accepted_privacy_version` and `ip_hash` as user metadata (read by `handle_new_user`). Sign-up and reset responses never reveal whether an email is registered.
+- `safeNext()` (`src/lib/auth/redirect.ts`) sanitizes every `next` redirect. IPs go through `hashIp(clientIp(headers))`, which returns null without `IP_HASH_SALT`.
+- The header's sign-in state (`AuthControls`) is a client component, so pages stay static. Never read cookies or the user in the root layout or header on the server.
+- Forms: `Field` / `CheckboxField` / `FormMessage` / `SubmitButton` in `src/components/forms/` (labels, hints and errors wired with `aria-describedby` and `aria-invalid`).
+- Validation mirrors the DB: `src/lib/validation/handle.ts` must match `is_valid_handle()` (checked by test).
 
 ## Domain rules
 - **Roles:** `user` (default), `moderator`, `admin` on `profiles.role`. "Contributor" is not a role: any verified, non-suspended user who accepts the Contributor Agreement can write.

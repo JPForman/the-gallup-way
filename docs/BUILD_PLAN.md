@@ -18,8 +18,13 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 2.1 Migration: `profiles`, role enum, helpers `is_staff/is_admin/is_suspended`, protection trigger, profile-on-signup trigger; pgTAP tests
 - [x] 2.2 Migration: `agreement_versions`, `agreement_acceptances`; seed v1 Terms/Privacy/Contributor versions; pgTAP
 - [ ] 2.2b Re-accept prompt: when a signed-in user hasn't accepted the current Terms or Privacy, show a banner or page to re-accept (do with 2.3/2.5)
-- [ ] 2.3 Sign-up (18+, Terms+Privacy), sign-in, callback, reset, sign-out; Zod schemas; e2e with local Inbucket
-- [ ] 2.4 Resend as Supabase SMTP (cloud) + email templates
+- [x] 2.3 Sign-up (18+, Terms+Privacy), sign-in, callback, reset, sign-out; Zod schemas; e2e with local Inbucket
+- [ ] 2.3b Cloud auth settings (operator, Supabase dashboard + Vercel):
+  - [ ] Authentication → URL Configuration: Site URL `https://the-gallup-way.vercel.app`; Redirect URLs `https://the-gallup-way.vercel.app/**`, `https://*-jpformans-projects.vercel.app/**` (previews), `http://localhost:3000/**`
+  - [ ] Authentication → Email Templates: paste `supabase/templates/confirmation.html` (Confirm signup) and `recovery.html` (Reset password), with the subjects from `config.toml`
+  - [ ] Authentication → Providers → Email: Confirm email ON, minimum password length 8, secure password change ON
+  - [ ] Vercel env var `IP_HASH_SALT` (random, `openssl rand -hex 32`), then redeploy
+- [ ] 2.4 Resend as Supabase SMTP (cloud). Until then the default mailer sends only ~2 emails/hour
 - [ ] 2.5 Profile page `/u/[handle]`, settings page (edit profile, avatar upload with compression, Storage policies)
 
 ## Phase 3 — Publishing
