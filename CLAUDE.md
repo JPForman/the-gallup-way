@@ -125,7 +125,7 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - Local `supabase/config.toml` raises auth rate limits (email, sign-in, verification) for e2e. Cloud limits are separate (Dashboard → Authentication → Rate Limits).
 - Redirecting Server Actions (save, publish) can take > 10 s on a cold `pnpm dev` under the parallel suite; e2e waits up to 30 s after them (`AFTER_ACTION` in `e2e/publish.spec.ts`). Known dev-only flake: the first save on `/write` once rendered `/edit/<id>` while the address bar stayed `/write` (not reproduced in 12 reruns or in CI, which uses `pnpm start`). If it shows up again, look at the `saveArticle` redirect inside `startTransition`.
 - Don't run `pnpm build` while the Playwright dev server is running (or right before a local dev-mode run): both use `.next`, and the dev run then fails across unrelated specs. To check like CI: `rm -rf .next && pnpm build && CI=1 pnpm exec playwright test`.
-- `supabase/seed.sql` seeds one password-less sample writer and the published story `/a/farmers-market-moves-indoors-5eed01` (in the smoke axe list). Seed is local/CI only.
+- `supabase/seed.sql` seeds one password-less sample writer and the published story `/a/farmers-market-moves-indoors-5eed01` (in the smoke axe list). Seed is local/CI only. pgTAP files that count articles start with `delete from public.articles;` (inside the test transaction) so seed and e2e leftovers don't change the counts. Run `pnpm db:test` after any seed change.
 - Every e2e page check includes an axe accessibility scan in light and dark mode (`e2e/smoke.spec.ts`); new pages should be added to that list.
 
 ## Environment

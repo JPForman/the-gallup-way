@@ -2,6 +2,9 @@
 begin;
 select plan(30);
 
+-- Start from no stories (seed.sql and local e2e runs add some); rolled back at the end.
+delete from public.articles;
+
 -- Users: ana (author), bo (another user), sus (suspended author), mod (moderator).
 insert into auth.users (id, email, raw_user_meta_data) values
   ('dddddddd-0000-0000-0000-000000000001', 'ana@test.local',
