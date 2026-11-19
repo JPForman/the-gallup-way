@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { CorrectionsList } from "@/components/corrections-list";
 import { FormMessage } from "@/components/forms/form-message";
 import { articleImageUrl, getArticleForEdit, STATUS_LABELS } from "@/lib/db/articles";
+import { listCorrections } from "@/lib/db/corrections";
 import { getMyAccount, publishInfo } from "@/lib/db/profiles";
 import type { FormState } from "@/lib/forms/state";
 import { createClient } from "@/lib/supabase/server";
 import { ArticleForm } from "@/app/write/article-form";
 import { CannotWrite } from "@/app/write/cannot-write";
 import type { EditNotice } from "@/app/write/actions";
+import { CorrectionForm } from "./correction-form";
 import { DeleteDraftButton } from "./delete-draft-button";
 import { WithdrawButton } from "./withdraw-button";
 
@@ -62,6 +65,7 @@ export default async function EditPage({
     getMyAccount(supabase),
   ]);
   if (!article) notFound();
+  const corrections = article.published_at ? await listCorrections(supabase, article.id) : [];
 
   const status = article.status;
   const editable = status === "draft" || status === "pending_review" || status === "published";
@@ -127,6 +131,28 @@ export default async function EditPage({
           <CannotWrite account={account} />
         )}
       </div>
+
+      {status === "published" ? (
+        <section aria-labelledby="corrections-heading" className="mt-12 border-t border-border pt-8">
+          <h2 id="corrections-heading" className="font-serif text-xl font-semibold">
+            Corrections
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Fixed a factual mistake after publishing? Add a correction so readers know what changed.
+            Edits to a published story are kept in its history.
+          </p>
+          {corrections.length ? (
+            <div className="mt-4">
+              <CorrectionsList corrections={corrections} />
+            </div>
+          ) : null}
+          {account?.can_write ? (
+            <div className="mt-6">
+              <CorrectionForm articleId={article.id} />
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       {canDelete ? (
         <section aria-labelledby="danger-heading" className="mt-12 border-t border-border pt-8">

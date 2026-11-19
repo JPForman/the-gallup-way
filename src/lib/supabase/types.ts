@@ -138,6 +138,51 @@ export type Database = {
           },
         ]
       }
+      article_revisions: {
+        Row: {
+          article_id: string
+          body_json: Json
+          created_at: string
+          dek: string | null
+          edited_by: string | null
+          id: number
+          title: string
+        }
+        Insert: {
+          article_id: string
+          body_json: Json
+          created_at?: string
+          dek?: string | null
+          edited_by?: string | null
+          id?: never
+          title: string
+        }
+        Update: {
+          article_id?: string
+          body_json?: Json
+          created_at?: string
+          dek?: string | null
+          edited_by?: string | null
+          id?: never
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_revisions_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_revisions_edited_by_fkey"
+            columns: ["edited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       article_sources: {
         Row: {
           article_id: string
@@ -263,6 +308,45 @@ export type Database = {
         }
         Relationships: []
       }
+      corrections: {
+        Row: {
+          article_id: string
+          body: string
+          created_at: string
+          created_by: string | null
+          id: number
+        }
+        Insert: {
+          article_id: string
+          body: string
+          created_at?: string
+          created_by?: string | null
+          id?: never
+        }
+        Update: {
+          article_id?: string
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corrections_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corrections_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age_confirmed_at: string | null
@@ -310,6 +394,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_correct_article: { Args: { p_article_id: string }; Returns: boolean }
       can_edit_article: { Args: { p_article_id: string }; Returns: boolean }
       can_publish_directly: { Args: never; Returns: boolean }
       can_view_article: { Args: { p_article_id: string }; Returns: boolean }

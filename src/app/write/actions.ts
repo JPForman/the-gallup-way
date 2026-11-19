@@ -6,10 +6,11 @@ import { redirect } from "next/navigation";
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { clientIp, hashIp } from "@/lib/auth/ip-hash";
 import { ARTICLE_IMAGE_BUCKET, type SaveArticleResult } from "@/lib/db/articles";
-import type { FormState } from "@/lib/forms/state";
+import { fieldErrorsOf, type FormState } from "@/lib/forms/state";
 import { createClient } from "@/lib/supabase/server";
 import type { Database, Json } from "@/lib/supabase/types";
 import { parseArticleForm, publishProblems } from "@/lib/validation/article";
+import { parseCorrectionForm } from "@/lib/validation/correction";
 
 type Client = SupabaseClient<Database>;
 
@@ -151,6 +152,41 @@ export async function withdrawArticle(formData: FormData): Promise<void> {
   const { error } = await supabase.rpc("withdraw_article", { p_article_id: id });
   revalidatePath("/write");
   redirect(error ? `/edit/${id}` : editUrl(id, "withdrawn"));
+}
+
+/** Append a correction to the caller's published story (append-only). */
+export async function addCorrection(_prev: FormState, formData: FormData): Promise<FormState> {
+  const parsed = parseCorrectionForm(formData);
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Please fix the correction.",
+      fieldErrors: fieldErrorsOf(parsed.error),
+      values: { body: String(formData.get("body") ?? "") },
+    };
+  }
+  const { articleId, body } = parsed.data;
+
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return { status: "error", message: "Please sign in again." };
+
+  const { error } = await supabase.from("corrections").insert({ article_id: articleId, body });
+  if (error) {
+    return {
+      status: "error",
+      message:
+        error.code === "PT429"
+          ? error.message
+          : "We couldn't add the correction. Only the author of a published story can add one.",
+      values: { body },
+    };
+  }
+
+  const { data: row } = await supabase.from("articles").select("slug").eq("id", articleId).maybeSingle();
+  if (row?.slug) revalidatePath(`/a/${row.slug}`);
+  revalidatePath(`/edit/${articleId}`);
+  return { status: "success", message: "Correction added. It appears on the story with today's date." };
 }
 
 /** Permanently delete a never-submitted draft and its photo files. */
