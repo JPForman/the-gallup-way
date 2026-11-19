@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CATEGORIES } from "@/lib/site";
-import { isWithinSizeLimit, safeHref, sanitizeRichDoc, type RichDoc } from "@/lib/richtext";
+import { isEmptyRichText, isWithinSizeLimit, safeHref, sanitizeRichDoc, type RichDoc } from "@/lib/richtext";
 
 /** Matches the DB checks in 20261119010000_articles.sql. */
 export const ARTICLE_LIMITS = {
@@ -74,7 +74,7 @@ export type ArticleInput = {
 };
 
 export type ArticleFieldErrors = Partial<
-  Record<"title" | "dek" | "category" | "contentType" | "body" | "sources" | "images", string[]>
+  Record<"title" | "dek" | "category" | "contentType" | "body" | "sources" | "images" | "agreement", string[]>
 >;
 
 type ParseResult = { ok: true; data: ArticleInput } | { ok: false; fieldErrors: ArticleFieldErrors };
@@ -176,4 +176,22 @@ export function parseArticleForm(formData: FormData, userId: string): ParseResul
       images,
     },
   };
+}
+
+/** Headline length required to publish (matches submit_article()). */
+export const MIN_PUBLISH_TITLE = 5;
+
+/**
+ * What a story still needs before it can be published, as field errors.
+ * Mirrors the checks in submit_article(), so problems show on the fields
+ * instead of as a database error.
+ */
+export function publishProblems(input: ArticleInput): ArticleFieldErrors {
+  const problems: ArticleFieldErrors = {};
+  if (input.title.trim().length < MIN_PUBLISH_TITLE) {
+    problems.title = [`Add a headline of at least ${MIN_PUBLISH_TITLE} characters to publish.`];
+  }
+  if (!input.category) problems.category = ["Choose a category to publish."];
+  if (isEmptyRichText(input.body)) problems.body = ["Write the story before publishing."];
+  return problems;
 }

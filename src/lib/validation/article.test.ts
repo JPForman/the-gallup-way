@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isArticleImagePath, parseArticleForm } from "./article";
+import { isArticleImagePath, parseArticleForm, publishProblems, type ArticleInput } from "./article";
 
 const USER = "11111111-1111-4111-8111-111111111111";
 const ARTICLE = "22222222-2222-4222-8222-222222222222";
@@ -123,5 +123,26 @@ describe("isArticleImagePath", () => {
     [`${ARTICLE}/${USER}/a.webp`, false],
   ])("%s -> %s", (path, ok) => {
     expect(isArticleImagePath(path, USER, ARTICLE)).toBe(ok);
+  });
+});
+
+describe("publishProblems", () => {
+  const ready: ArticleInput = {
+    title: "Rodeo week",
+    category: "events",
+    contentType: "event",
+    body: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hi" }] }] },
+    sources: [],
+    images: [],
+  };
+
+  it("passes a complete story", () => {
+    expect(publishProblems(ready)).toEqual({});
+  });
+
+  it("lists everything that's missing", () => {
+    expect(
+      Object.keys(publishProblems({ ...ready, title: " Hey ", category: undefined, body: { type: "doc", content: [{ type: "paragraph" }] } })),
+    ).toEqual(["title", "category", "body"]);
   });
 });

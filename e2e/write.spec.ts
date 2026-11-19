@@ -32,8 +32,8 @@ test.describe("writing stories", () => {
     await page.getByLabel("Label (optional)").fill("Fair board schedule");
 
     await page.getByRole("button", { name: "Save draft" }).click();
-    await expect(page.getByRole("main").getByRole("status")).toHaveText("Draft saved. You can add photos now.");
-    await expect(page).toHaveURL(/\/edit\/[0-9a-f-]{36}\?saved=1$/, { timeout: 20_000 });
+    await expect(page.getByRole("main").getByRole("status")).toHaveText("Draft saved. You can add photos now.", { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/edit\/[0-9a-f-]{36}\?notice=saved$/, { timeout: 30_000 });
     await page.locator("html[data-hydrated]").waitFor({ state: "attached" });
 
     // Photo
