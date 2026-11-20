@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { newSignedInUser } from "./helpers/auth";
 import { sql } from "./helpers/db";
@@ -64,4 +65,27 @@ test("locked stories show that comments are closed", async ({ page }) => {
   const comments = page.getByRole("region", { name: /Comments/ });
   await expect(comments.getByText("Comments are closed on this story.")).toBeVisible();
   await expect(comments.getByLabel("Add a comment")).toHaveCount(0);
+});
+
+test("comments removed by a moderator show a placeholder and keep their replies", async ({ page }) => {
+  const { slug, id, authorId } = await storyByAnotherAuthor("modremoved");
+  const modId = randomUUID();
+  await sql`insert into auth.users (id, email, raw_user_meta_data) values (${modId}, ${`mod-${modId.slice(0, 8)}@example.invalid`},
+    ${sql.json({ handle: `mod_${modId.slice(0, 8)}`, display_name: "Moderator", age_confirmed: true, accepted_terms_version: 1, accepted_privacy_version: 1 })})`;
+  await sql`update public.profiles set role = 'moderator' where id = ${modId}`;
+  const [top] = await sql<{ id: number }[]>`
+    insert into public.comments (article_id, author_id, body) values (${id}, ${authorId}, 'Something rude') returning id`;
+  await sql`insert into public.comments (article_id, author_id, parent_id, body) values (${id}, ${authorId}, ${top!.id}, 'A reply that stays')`;
+
+  // The real staff function, called as the moderator.
+  await sql.begin(async (tx) => {
+    await tx`select set_config('request.jwt.claims', ${JSON.stringify({ sub: modId, role: "authenticated" })}, true)`;
+    await tx`select public.staff_comment_action(${top!.id}, 'remove', 'Personal attack')`;
+  });
+
+  await page.goto(`/a/${slug}`);
+  const comments = page.getByRole("region", { name: /Comments/ });
+  await expect(comments.getByText("Removed by a moderator.")).toBeVisible();
+  await expect(comments.getByText("Something rude")).toHaveCount(0);
+  await expect(comments.getByText("A reply that stays")).toBeVisible();
 });

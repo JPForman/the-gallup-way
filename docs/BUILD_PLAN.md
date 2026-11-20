@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 5.5 (Phase 5 complete).** Push `20261122000000_bookmarks.sql` (5.4) and `20261122010000_profile_stats.sql` (5.5) before merging their PRs (the profile build calls `profile_stats`/`feed_author`); check the dry run says "Remote database is up to date" before merging. Local: 332 pgTAP checks, 176 unit tests, 138 Playwright tests (2 desktop-only).
-- **Next: Phase 6, starting with 6.1** (see the Phase 6 list below).
+- **Done through 6.1.** Phase 5 is complete. Push `20261123000000_moderation.sql` before merging 6.1 (the comments UI selects `comments.removed_at`); check the dry run says "Remote database is up to date" before merging. Local: 376 pgTAP checks, 176 unit tests, 140 Playwright tests (2 desktop-only).
+- **Next: 6.2 report button/dialog** on stories, comments and profiles. Client dialog (reason radio group + details, required for "Other"), inserts into `reports` directly (RLS + trigger enforce rules; `PT429` and duplicate `23505` get friendly messages: "You already reported this"). Signed out → sign-in link; can't-write accounts → explain. Shared Zod schema `src/lib/validation/report.ts`. Unit + e2e (report → row in DB; duplicate message).
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -54,7 +54,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 5.5 Contributor stats on profile (plus the writer's story list, which was still a placeholder)
 
 ## Phase 6 — Safety and admin
-- [ ] 6.1 Migration: `reports` (priority), `moderation_actions`, staff action SQL functions; pgTAP
+- [x] 6.1 Migration: `reports` (priority), `moderation_actions`, staff action SQL functions; pgTAP
 - [ ] 6.2 Report button/dialog on articles, comments, profiles
 - [ ] 6.3 `/admin` dashboard: stat tiles, Reports / Pending / New users / Log tabs, item drawer with actions
 - [ ] 6.4 Suspend/ban, role change (admin), category management

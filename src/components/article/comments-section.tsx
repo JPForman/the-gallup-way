@@ -114,7 +114,11 @@ function CommentBody({
 }) {
   const [confirming, setConfirming] = useState(false);
   if (comment.deleted_at) {
-    return <p className="py-2 text-sm text-muted-foreground italic">Comment deleted.</p>;
+    return (
+      <p className="py-2 text-sm text-muted-foreground italic">
+        {comment.removed_at ? "Removed by a moderator." : "Comment deleted."}
+      </p>
+    );
   }
   const name = comment.author?.display_name ?? "Former member";
   return (

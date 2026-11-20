@@ -379,6 +379,7 @@ export type Database = {
           deleted_at: string | null
           id: number
           parent_id: number | null
+          removed_at: string | null
         }
         Insert: {
           article_id: string
@@ -388,6 +389,7 @@ export type Database = {
           deleted_at?: string | null
           id?: never
           parent_id?: number | null
+          removed_at?: string | null
         }
         Update: {
           article_id?: string
@@ -397,6 +399,7 @@ export type Database = {
           deleted_at?: string | null
           id?: never
           parent_id?: number | null
+          removed_at?: string | null
         }
         Relationships: [
           {
@@ -494,6 +497,81 @@ export type Database = {
           },
         ]
       }
+      moderation_actions: {
+        Row: {
+          action: Database["public"]["Enums"]["moderation_action_kind"]
+          actor_id: string | null
+          article_id: string | null
+          comment_id: number | null
+          created_at: string
+          details: Json
+          id: number
+          profile_id: string | null
+          reason: string
+          report_id: number | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["moderation_action_kind"]
+          actor_id?: string | null
+          article_id?: string | null
+          comment_id?: number | null
+          created_at?: string
+          details?: Json
+          id?: never
+          profile_id?: string | null
+          reason: string
+          report_id?: number | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["moderation_action_kind"]
+          actor_id?: string | null
+          article_id?: string | null
+          comment_id?: number | null
+          created_at?: string
+          details?: Json
+          id?: never
+          profile_id?: string | null
+          reason?: string
+          report_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age_confirmed_at: string | null
@@ -572,11 +650,104 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          article_id: string | null
+          comment_id: number | null
+          created_at: string
+          details: string | null
+          id: number
+          priority: string
+          profile_id: string | null
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: Database["public"]["Enums"]["report_status"]
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Insert: {
+          article_id?: string | null
+          comment_id?: number | null
+          created_at?: string
+          details?: string | null
+          id?: never
+          priority?: string
+          profile_id?: string | null
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Update: {
+          article_id?: string | null
+          comment_id?: number | null
+          created_at?: string
+          details?: string | null
+          id?: never
+          priority?: string
+          profile_id?: string | null
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_type?: Database["public"]["Enums"]["report_target"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      add_staff_note: {
+        Args: {
+          p_article_id?: string
+          p_comment_id?: number
+          p_profile_id?: string
+          p_reason: string
+        }
+        Returns: number
+      }
       article_engagement: {
         Args: { p_article_id: string }
         Returns: {
@@ -588,6 +759,15 @@ export type Database = {
       can_correct_article: { Args: { p_article_id: string }; Returns: boolean }
       can_edit_article: { Args: { p_article_id: string }; Returns: boolean }
       can_publish_directly: { Args: never; Returns: boolean }
+      can_report: {
+        Args: {
+          p_article_id: string
+          p_comment_id: number
+          p_profile_id: string
+          p_target: Database["public"]["Enums"]["report_target"]
+        }
+        Returns: boolean
+      }
       can_view_article: { Args: { p_article_id: string }; Returns: boolean }
       can_write: { Args: never; Returns: boolean }
       comment_count: { Args: { p_article_id: string }; Returns: number }
@@ -608,6 +788,10 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       delete_comment: { Args: { p_comment_id: number }; Returns: boolean }
+      dismiss_report: {
+        Args: { p_reason: string; p_report_id: number }
+        Returns: boolean
+      }
       feed_author: {
         Args: {
           p_author_id: string
@@ -691,6 +875,27 @@ export type Database = {
       is_suspended: { Args: never; Returns: boolean }
       is_valid_handle: { Args: { h: string }; Returns: boolean }
       like_count: { Args: { p_article_id: string }; Returns: number }
+      mod_close_reports: {
+        Args: {
+          p_article_id: string
+          p_comment_id: number
+          p_profile_id: string
+        }
+        Returns: number
+      }
+      mod_log: {
+        Args: {
+          p_action: Database["public"]["Enums"]["moderation_action_kind"]
+          p_article_id?: string
+          p_comment_id?: number
+          p_details?: Json
+          p_profile_id?: string
+          p_reason: string
+          p_report_id?: number
+        }
+        Returns: number
+      }
+      mod_require_staff: { Args: { p_reason: string }; Returns: string }
       my_account: {
         Args: never
         Returns: {
@@ -788,7 +993,43 @@ export type Database = {
           id: string
         }[]
       }
+      set_user_role: {
+        Args: {
+          p_profile_id: string
+          p_reason: string
+          p_role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
       slugify: { Args: { t: string }; Returns: string }
+      staff_article_action: {
+        Args: {
+          p_action: string
+          p_article_id: string
+          p_reason: string
+          p_report_id?: number
+        }
+        Returns: Database["public"]["Enums"]["article_status"]
+      }
+      staff_comment_action: {
+        Args: {
+          p_action: string
+          p_comment_id: number
+          p_reason: string
+          p_report_id?: number
+        }
+        Returns: boolean
+      }
+      staff_user_action: {
+        Args: {
+          p_action: string
+          p_profile_id: string
+          p_reason: string
+          p_report_id?: number
+          p_until?: string
+        }
+        Returns: string
+      }
       submit_article: {
         Args: { p_article_id: string }
         Returns: Database["public"]["Enums"]["article_status"]
@@ -831,7 +1072,31 @@ export type Database = {
         | "event"
         | "sports"
         | "business"
+      moderation_action_kind:
+        | "hide_article"
+        | "restore_article"
+        | "approve_article"
+        | "reject_article"
+        | "lock_comments"
+        | "unlock_comments"
+        | "remove_comment"
+        | "restore_comment"
+        | "suspend_user"
+        | "unsuspend_user"
+        | "ban_user"
+        | "change_role"
+        | "dismiss_report"
+        | "note"
       reaction_kind: "like" | "dislike"
+      report_reason:
+        | "defamation"
+        | "harassment"
+        | "copyright"
+        | "spam"
+        | "threat"
+        | "other"
+      report_status: "open" | "resolved" | "dismissed"
+      report_target: "article" | "comment" | "profile"
       user_role: "user" | "moderator" | "admin"
     }
     CompositeTypes: {
@@ -979,7 +1244,33 @@ export const Constants = {
         "sports",
         "business",
       ],
+      moderation_action_kind: [
+        "hide_article",
+        "restore_article",
+        "approve_article",
+        "reject_article",
+        "lock_comments",
+        "unlock_comments",
+        "remove_comment",
+        "restore_comment",
+        "suspend_user",
+        "unsuspend_user",
+        "ban_user",
+        "change_role",
+        "dismiss_report",
+        "note",
+      ],
       reaction_kind: ["like", "dislike"],
+      report_reason: [
+        "defamation",
+        "harassment",
+        "copyright",
+        "spam",
+        "threat",
+        "other",
+      ],
+      report_status: ["open", "resolved", "dismissed"],
+      report_target: ["article", "comment", "profile"],
       user_role: ["user", "moderator", "admin"],
     },
   },
