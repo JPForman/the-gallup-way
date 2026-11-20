@@ -18,6 +18,14 @@ export default async function SettingsPage() {
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-8 md:py-12">
       <h1 className="font-serif text-3xl font-bold tracking-tight">Settings</h1>
+      {profile.role === "moderator" || profile.role === "admin" ? (
+        <p className="mt-4 rounded-md border border-border bg-muted p-3 text-sm">
+          You&apos;re site staff.{" "}
+          <Link href="/admin" className="font-medium underline underline-offset-4">
+            Open the admin dashboard
+          </Link>
+        </p>
+      ) : null}
       <p className="mt-2 text-muted-foreground">
         Your public profile:{" "}
         <Link href={`/u/${profile.handle}`} className="font-medium underline underline-offset-4">

@@ -748,6 +748,48 @@ export type Database = {
         }
         Returns: number
       }
+      admin_new_users: {
+        Args: { p_limit?: number }
+        Returns: {
+          approved_article_count: number
+          created_at: string
+          display_name: string
+          handle: string
+          id: string
+          open_reports: number
+          role: Database["public"]["Enums"]["user_role"]
+          stories: number
+          suspended_until: string
+        }[]
+      }
+      admin_report_queue: {
+        Args: { p_limit?: number }
+        Returns: {
+          article_id: string
+          comment_id: number
+          details: string[]
+          first_reported_at: string
+          handle: string
+          high: boolean
+          item_state: string
+          profile_id: string
+          reasons: string[]
+          report_count: number
+          report_ids: number[]
+          slug: string
+          summary: string
+          target_type: Database["public"]["Enums"]["report_target"]
+        }[]
+      }
+      admin_stats: {
+        Args: never
+        Returns: {
+          high_priority_reports: number
+          new_users_7d: number
+          open_reports: number
+          pending_stories: number
+        }[]
+      }
       article_engagement: {
         Args: { p_article_id: string }
         Returns: {
