@@ -186,4 +186,10 @@ insert into public.follows (follower_id, followee_id, created_at) values
   ('5a5a0000-0000-4000-8000-000000000002', '5a5a0000-0000-4000-8000-000000000001', now() - interval '1 day')
 on conflict do nothing;
 
+-- Rosa has saved a couple of stories (private; visible on /saved when signed in as her).
+insert into public.bookmarks (user_id, article_id, created_at) values
+  ('5a5a0000-0000-4000-8000-000000000001', '5a5a0000-0000-4000-8000-000000000102', now() - interval '4 hours'),
+  ('5a5a0000-0000-4000-8000-000000000001', '5a5a0000-0000-4000-8000-000000000106', now() - interval '1 hour')
+on conflict do nothing;
+
 select count(*) as sample_stories from public.articles where id::text like '5a5a0000-0000-4000-8000-0000000001%';

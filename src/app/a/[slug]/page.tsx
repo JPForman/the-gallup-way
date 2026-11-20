@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArticleView } from "@/components/article/article-view";
 import { CommentsSection } from "@/components/article/comments-section";
 import { LikeButton } from "@/components/article/like-button";
+import { SaveButton } from "@/components/article/save-button";
 import { ViewCounter } from "@/components/article/view-counter";
 import { FollowButton } from "@/components/follow-button";
 import { articleImageUrl, getPublishedArticle } from "@/lib/db/articles";
@@ -54,6 +55,7 @@ export default async function ArticlePage({ params }: Props) {
           article.slug ? (
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <LikeButton articleId={article.id} slug={article.slug} />
+              <SaveButton articleId={article.id} slug={article.slug} />
               {article.author_id && article.author ? (
                 <FollowButton
                   profileId={article.author_id}

@@ -250,3 +250,29 @@ export async function listFollowingArticles(
     next: rows.length > FEED_PAGE_SIZE && last ? { publishedAt: last.published_at, id: last.id } : null,
   };
 }
+
+/** A saved story: a feed item plus when the reader saved it. */
+export type SavedItem = FeedItem & { saved_at: string };
+
+/**
+ * The signed-in reader's saved stories, most recently saved first. The cursor
+ * reuses FeedCursor, with `publishedAt` holding the saved_at time.
+ */
+export async function listSavedArticles(
+  client: Client,
+  opts: { before?: { publishedAt: string; id: string } } = {},
+): Promise<{ items: SavedItem[]; next: { publishedAt: string; id: string } | null }> {
+  const { data, error } = await client.rpc("saved_articles", {
+    p_before_saved_at: opts.before?.publishedAt,
+    p_before_id: opts.before?.id,
+    p_limit: FEED_PAGE_SIZE + 1,
+  });
+  if (error) throw error;
+  const rows = (data ?? []) as unknown as SavedItem[];
+  const items = rows.slice(0, FEED_PAGE_SIZE);
+  const last = items.at(-1);
+  return {
+    items,
+    next: rows.length > FEED_PAGE_SIZE && last ? { publishedAt: last.saved_at, id: last.id } : null,
+  };
+}

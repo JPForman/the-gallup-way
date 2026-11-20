@@ -49,6 +49,9 @@ export function AuthControls() {
     return (
       <>
         <Button asChild variant="ghost" className="ml-1 hidden h-11 md:inline-flex">
+          <Link href="/saved">Saved</Link>
+        </Button>
+        <Button asChild variant="ghost" className="ml-1 hidden h-11 md:inline-flex">
           <Link href="/me">My profile</Link>
         </Button>
         <form action={signOut} className="ml-1">
