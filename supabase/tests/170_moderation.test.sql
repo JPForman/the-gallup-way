@@ -1,6 +1,6 @@
 -- Reports, moderation log and staff actions (migration 20261123000000).
 begin;
-select plan(44);
+select plan(47);
 
 delete from public.articles;
 
@@ -130,6 +130,12 @@ select throws_ok($$select public.set_user_role('e0e00000-0000-0000-0000-00000000
 -- The log is append-only even for the owner.
 reset role;
 select throws_ok($$delete from public.moderation_actions$$, '42501', null, 'the log cannot be deleted');
+select throws_ok($$update public.moderation_actions set reason = 'edited'$$, '42501', null, 'log entries cannot be edited');
+select throws_ok($$update public.moderation_actions set article_id = 'e0e00000-0000-0000-0000-0000000000a2'$$,
+  '42501', null, 'log references cannot be repointed');
+delete from auth.users where id = 'e0e00000-0000-0000-0000-000000000002';
+select is((select count(*)::int from public.moderation_actions where profile_id is null and action = 'ban_user'), 1,
+  'deleting an account keeps its log entries, with the reference cleared');
 
 select * from finish();
 rollback;

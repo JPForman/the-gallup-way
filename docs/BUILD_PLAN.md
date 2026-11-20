@@ -3,7 +3,7 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 6.1.** Phase 5 is complete. Push `20261123000000_moderation.sql` before merging 6.1 (the comments UI selects `comments.removed_at`); check the dry run says "Remote database is up to date" before merging. Local: 376 pgTAP checks, 176 unit tests, 140 Playwright tests (2 desktop-only).
+- **Done through 6.1.** Phase 5 is complete. Push `20261123000000_moderation.sql` and `20261123000100_moderation_log_fk_nulls.sql` before merging 6.1 (the comments UI selects `comments.removed_at`); check the dry run says "Remote database is up to date" before merging. Local: 376 pgTAP checks, 176 unit tests, 140 Playwright tests (2 desktop-only).
 - **Next: 6.2 report button/dialog** on stories, comments and profiles. Client dialog (reason radio group + details, required for "Other"), inserts into `reports` directly (RLS + trigger enforce rules; `PT429` and duplicate `23505` get friendly messages: "You already reported this"). Signed out → sign-in link; can't-write accounts → explain. Shared Zod schema `src/lib/validation/report.ts`. Unit + e2e (report → row in DB; duplicate message).
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
