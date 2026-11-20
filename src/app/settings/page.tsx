@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { avatarUrl, getProfileById } from "@/lib/db/profiles";
 import { createClient } from "@/lib/supabase/server";
+import { DeleteAccountForm } from "./delete-account-form";
 import { ProfileForm } from "./profile-form";
 
 export const metadata: Metadata = { title: "Settings" };
@@ -54,10 +55,18 @@ export default async function SettingsPage() {
         <h2 id="account-heading" className="font-serif text-xl font-semibold">
           Account
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Your email is private and never shown on the site. Account deletion is coming soon; until
-          then, use the Contact page to ask for your account to be deleted.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">Your email is private and never shown on the site.</p>
+        <h3 className="mt-6 font-semibold">Delete your account</h3>
+        {profile.role === "admin" ? (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Admins can&apos;t delete their own account, so the site always keeps an admin. Ask another admin to change
+            your role first.
+          </p>
+        ) : (
+          <div className="mt-3">
+            <DeleteAccountForm />
+          </div>
+        )}
       </section>
     </main>
   );

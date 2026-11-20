@@ -971,6 +971,13 @@ export type Database = {
           suspended_until: string
         }[]
       }
+      prepare_account_deletion: {
+        Args: { p_mode: string }
+        Returns: {
+          bucket: string
+          path: string
+        }[]
+      }
       profile_stats: {
         Args: { p_profile_id: string }
         Returns: {
