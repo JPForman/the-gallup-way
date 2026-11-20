@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useRef } from "react";
+import { useActionState, useId, useRef, type ReactNode } from "react";
 import { moderate } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -21,12 +21,15 @@ export function ActionForm({
   reportId,
   choices,
   label = "Reason (goes in the moderation log)",
+  children,
 }: {
-  kind: "article" | "comment" | "report";
+  kind: "article" | "comment" | "report" | "user" | "role" | "note";
   id: string | number;
   reportId?: number;
   choices: ActionChoice[];
   label?: string;
+  /** Extra fields shown above the reason (e.g. a role picker). */
+  children?: ReactNode;
 }) {
   const fieldId = useId();
   // The clicked button's name/value isn't reliably in the submitted FormData,
@@ -42,6 +45,7 @@ export function ActionForm({
       <input type="hidden" name="id" value={String(id)} />
       <input ref={actionInput} type="hidden" name="action" defaultValue={choices[0]?.action} />
       {reportId ? <input type="hidden" name="reportId" value={String(reportId)} /> : null}
+      {children}
       <Label htmlFor={fieldId} className="text-sm font-semibold">
         {label}
       </Label>

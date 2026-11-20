@@ -34,4 +34,14 @@ describe("parseModerationForm", () => {
     expect(parseModerationForm(form({ kind: "comment", id: "12", action: "hide", reason: "x" })).success).toBe(false);
     expect(parseModerationForm(form({ kind: "article", id: "not-a-uuid", action: "hide", reason: "x" })).success).toBe(false);
   });
+
+  it("parses account, role and note actions", () => {
+    expect(parseModerationForm(form({ kind: "user", id: ID, action: "suspend_7", reason: "Spam" })).success).toBe(true);
+    expect(parseModerationForm(form({ kind: "user", id: ID, action: "delete", reason: "x" })).success).toBe(false);
+    expect(parseModerationForm(form({ kind: "role", id: ID, action: "set_role", role: "moderator", reason: "Trusted" })).data).toMatchObject({
+      role: "moderator",
+    });
+    expect(parseModerationForm(form({ kind: "role", id: ID, action: "set_role", role: "owner", reason: "x" })).success).toBe(false);
+    expect(parseModerationForm(form({ kind: "note", id: ID, action: "note", reason: "Warned by email" })).success).toBe(true);
+  });
 });

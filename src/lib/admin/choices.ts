@@ -17,3 +17,28 @@ export function articleChoices(a: { status: string; comments_locked: boolean }):
   }
   return out;
 }
+
+/**
+ * Account buttons, mirroring staff_user_action(): nobody acts on themselves
+ * or on an admin; only admins act on moderators.
+ */
+export function userChoices(opts: {
+  targetRole: string;
+  status: "active" | "suspended" | "banned";
+  self: boolean;
+  viewerIsAdmin: boolean;
+}): ActionChoice[] {
+  if (opts.self || opts.targetRole === "admin") return [];
+  if (opts.targetRole === "moderator" && !opts.viewerIsAdmin) return [];
+  if (opts.status === "active") {
+    return [
+      { action: "suspend_7", label: "Suspend 7 days", tone: "danger" },
+      { action: "suspend_30", label: "Suspend 30 days", tone: "danger" },
+      { action: "ban", label: "Ban", tone: "danger" },
+    ];
+  }
+  return [
+    { action: "unsuspend", label: opts.status === "banned" ? "Lift ban" : "Lift suspension" },
+    ...(opts.status === "suspended" ? [{ action: "ban", label: "Ban", tone: "danger" as const }] : []),
+  ];
+}

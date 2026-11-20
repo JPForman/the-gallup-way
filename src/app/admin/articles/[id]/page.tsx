@@ -49,7 +49,7 @@ export default async function AdminArticlePage({ params }: { params: Promise<{ i
           {article.author ? (
             <>
               by{" "}
-              <Link href={`/u/${article.author.handle}`} className="underline underline-offset-4">
+              <Link href={`/admin/users/${article.author.id}`} className="underline underline-offset-4">
                 {article.author.display_name} (@{article.author.handle})
               </Link>
             </>
