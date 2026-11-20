@@ -81,9 +81,18 @@ export function StoryCard({
 }
 
 /** Grid of standard cards: one column on mobile, 2–3 on larger screens. */
-export function StoryGrid({ items, imageUrl }: { items: FeedItem[]; imageUrl: (path: string) => string }) {
+export function StoryGrid({
+  items,
+  imageUrl,
+  columns = 3,
+}: {
+  items: FeedItem[];
+  imageUrl: (path: string) => string;
+  /** At most this many columns on wide screens (2 for narrow pages like profiles). */
+  columns?: 2 | 3;
+}) {
   return (
-    <ul className="grid gap-x-8 md:grid-cols-2 lg:grid-cols-3">
+    <ul className={cn("grid gap-x-8 md:grid-cols-2", columns === 3 && "lg:grid-cols-3")}>
       {items.map((item) => (
         <li key={item.id} className="border-t border-rule py-5">
           <StoryCard item={item} imageUrl={imageUrl} />

@@ -276,3 +276,25 @@ export async function listSavedArticles(
     next: rows.length > FEED_PAGE_SIZE && last ? { publishedAt: last.saved_at, id: last.id } : null,
   };
 }
+
+/** A page of one writer's published stories, newest first (profile pages). */
+export async function listAuthorArticles(
+  client: Client,
+  authorId: string,
+  opts: { before?: { publishedAt: string; id: string } } = {},
+): Promise<{ items: FeedItem[]; next: { publishedAt: string; id: string } | null }> {
+  const { data, error } = await client.rpc("feed_author", {
+    p_author_id: authorId,
+    p_before_published_at: opts.before?.publishedAt,
+    p_before_id: opts.before?.id,
+    p_limit: FEED_PAGE_SIZE + 1,
+  });
+  if (error) throw error;
+  const rows = (data ?? []) as unknown as FeedItem[];
+  const items = rows.slice(0, FEED_PAGE_SIZE);
+  const last = items.at(-1);
+  return {
+    items,
+    next: rows.length > FEED_PAGE_SIZE && last ? { publishedAt: last.published_at, id: last.id } : null,
+  };
+}
