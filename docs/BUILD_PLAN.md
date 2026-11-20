@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 5.2.** Push `20261121010000_comments.sql` before merging (the home build calls `top_stories`, which now uses `comment_count`); check the dry run says "Remote database is up to date" before merging. Local: 291 pgTAP checks, 164 unit tests, 126 Playwright tests (2 desktop-only). `pnpm db:samples` includes likes and comments.
-- **Next: 5.3 follows + Following feed.** `follows (follower_id default auth.uid(), followee_id, created_at, primary key (follower_id, followee_id), check follower <> followee)`. Who-follows-whom: decide privacy (suggest: follower counts public via a DEFINER `follow_counts(profile_id)`, rows readable only by the follower). `can_write()` to follow; unfollow own anytime. Explicit grants + `090` row. `feed_following(p_before_published_at, p_before_id, p_limit)` (SECURITY INVOKER, keyset like `feed_latest`, only stories by people the caller follows). UI: Follow button on `/u/[handle]` and the story byline (client, like LikeButton); Following tab on the home tabs → `/following` (dynamic, per user; signed out → sign-in prompt). pgTAP + e2e.
+- **Done through 5.3.** Push `20261121020000_follows.sql` before merging (`/following` and the follow buttons call `follow_context`/`feed_following`); check the dry run says "Remote database is up to date" before merging. Local: 310 pgTAP checks, 170 unit tests, 130 Playwright tests (2 desktop-only). `pnpm db:samples` includes likes, comments and follows.
+- **Next: 5.4 bookmarks + `/saved`.** `bookmarks (user_id default auth.uid(), article_id, created_at, primary key (user_id, article_id))`, private to the user (select/insert/delete own; anyone signed in, even suspended, may bookmark since it's private data?: decide; suggest `auth.uid() is not null` only). Explicit grants + `090` row. Save button next to Like/Follow on stories (client, optimistic). `/saved` dynamic, `noindex`, newest saved first, keyset on `(created_at, article_id)`; hidden/deleted stories drop out. pgTAP + e2e.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -49,7 +49,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 ## Phase 5 — Community
 - [x] 5.1 Likes (reactions) + counts; pgTAP
 - [x] 5.2 Comments (one-level replies, delete own, lock); rate limit; pgTAP
-- [ ] 5.3 Follows + Following feed
+- [x] 5.3 Follows + Following feed (counts public, who-follows-whom private)
 - [ ] 5.4 Bookmarks + `/saved`
 - [ ] 5.5 Contributor stats on profile
 

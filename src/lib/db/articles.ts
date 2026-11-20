@@ -109,7 +109,7 @@ export const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 export type PublicArticle = Pick<
   ArticleRow,
-  "id" | "slug" | "title" | "dek" | "body_json" | "category" | "content_type" | "published_at" | "edited_at"
+  "id" | "author_id" | "slug" | "title" | "dek" | "body_json" | "category" | "content_type" | "published_at" | "edited_at"
 > & {
   /** Null after the author deleted their account and kept their stories. */
   author: { handle: string; display_name: string; avatar_path: string | null } | null;
@@ -139,7 +139,7 @@ export async function getPublishedArticle(client: Client, slug: string): Promise
   const { data, error } = await client
     .from("articles")
     .select(
-      "id, slug, title, dek, body_json, category, content_type, published_at, edited_at, " +
+      "id, author_id, slug, title, dek, body_json, category, content_type, published_at, edited_at, " +
         "author:profiles!articles_author_id_fkey (handle, display_name, avatar_path), " +
         "article_sources (url, label, position), " +
         "article_images (storage_path, alt_text, caption, credit, position), " +
@@ -229,4 +229,24 @@ export async function searchArticles(
   if (error) throw error;
   const rows = (data ?? []) as unknown as FeedItem[];
   return { items: rows.slice(0, SEARCH_PAGE_SIZE), hasMore: rows.length > SEARCH_PAGE_SIZE };
+}
+
+/** A page of the signed-in reader's Following feed (feed_following()); empty when signed out. */
+export async function listFollowingArticles(
+  client: Client,
+  opts: { before?: { publishedAt: string; id: string } } = {},
+): Promise<{ items: FeedItem[]; next: { publishedAt: string; id: string } | null }> {
+  const { data, error } = await client.rpc("feed_following", {
+    p_before_published_at: opts.before?.publishedAt,
+    p_before_id: opts.before?.id,
+    p_limit: FEED_PAGE_SIZE + 1,
+  });
+  if (error) throw error;
+  const rows = (data ?? []) as unknown as FeedItem[];
+  const items = rows.slice(0, FEED_PAGE_SIZE);
+  const last = items.at(-1);
+  return {
+    items,
+    next: rows.length > FEED_PAGE_SIZE && last ? { publishedAt: last.published_at, id: last.id } : null,
+  };
 }

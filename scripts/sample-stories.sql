@@ -179,4 +179,11 @@ select '5a5a0000-0000-4000-8000-000000000105', '5a5a0000-0000-4000-8000-00000000
 from public.comments c
 where c.article_id = '5a5a0000-0000-4000-8000-000000000105' and c.author_id = '5a5a0000-0000-4000-8000-000000000001';
 
+-- Sample follows: Rosa and Lena follow Dan; Dan follows Rosa.
+insert into public.follows (follower_id, followee_id, created_at) values
+  ('5a5a0000-0000-4000-8000-000000000001', '5a5a0000-0000-4000-8000-000000000002', now() - interval '3 days'),
+  ('5a5a0000-0000-4000-8000-000000000003', '5a5a0000-0000-4000-8000-000000000002', now() - interval '2 days'),
+  ('5a5a0000-0000-4000-8000-000000000002', '5a5a0000-0000-4000-8000-000000000001', now() - interval '1 day')
+on conflict do nothing;
+
 select count(*) as sample_stories from public.articles where id::text like '5a5a0000-0000-4000-8000-0000000001%';

@@ -7,6 +7,7 @@ import { ArticleView, articleKicker, formatArticleDate } from "./article-view";
 function story(overrides: Partial<PublicArticle> = {}): PublicArticle {
   return {
     id: "a1",
+    author_id: "u1",
     slug: "fair-opens-abc123",
     title: "County fair opens Friday",
     dek: "Gates at nine",

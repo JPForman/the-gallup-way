@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 const TABS = [
   { href: "/", label: "Top", key: "top" },
   { href: "/latest", label: "Latest", key: "latest" },
+  { href: "/following", label: "Following", key: "following" },
 ] as const;
 
 export type FeedTab = (typeof TABS)[number]["key"];

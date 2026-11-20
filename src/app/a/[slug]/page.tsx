@@ -4,6 +4,7 @@ import { ArticleView } from "@/components/article/article-view";
 import { CommentsSection } from "@/components/article/comments-section";
 import { LikeButton } from "@/components/article/like-button";
 import { ViewCounter } from "@/components/article/view-counter";
+import { FollowButton } from "@/components/follow-button";
 import { articleImageUrl, getPublishedArticle } from "@/lib/db/articles";
 import { excerpt, richTextToPlain } from "@/lib/richtext";
 import { createPublicClient } from "@/lib/supabase/public";
@@ -49,7 +50,20 @@ export default async function ArticlePage({ params }: Props) {
       <ArticleView
         article={article}
         imageUrl={articleImageUrl}
-        actions={article.slug ? <LikeButton articleId={article.id} slug={article.slug} /> : null}
+        actions={
+          article.slug ? (
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <LikeButton articleId={article.id} slug={article.slug} />
+              {article.author_id && article.author ? (
+                <FollowButton
+                  profileId={article.author_id}
+                  name={article.author.display_name}
+                  signInNext={`/a/${article.slug}`}
+                />
+              ) : null}
+            </div>
+          ) : null
+        }
       />
       {article.slug ? (
         <div className="mx-auto w-full max-w-2xl px-4 pb-12">
