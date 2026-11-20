@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 5.1.** Push `20261121000000_likes.sql` before merging (the home page build calls `top_stories`, which now uses `like_count`). Rule: when the app reads a new DB function, push the migration before merging. Local: 264 pgTAP checks, 160 unit tests, 122 Playwright tests (2 desktop-only). `pnpm db:samples` loads sample stories (with likes) locally.
-- **Next: 5.2 comments.** `comments (id, article_id, author_id, parent_id null|top-level comment (one level of replies), body plain text 1–2000, created_at, deleted_at)`; public read when the story is visible (deleted comments render as "[removed]" if they have replies); `can_write()` users comment on published stories unless `comments_locked`; delete own (soft); 60 comments/day/user → `PT429` (trigger). Explicit grants + `090` row. `comment_count(id)` (SECURITY DEFINER) → plug into `top_stories` (`0 as comments`). Consider adding like/comment counts to feed cards (needs drop + recreate of `feed_latest`/`top_stories`/`search_articles` return types). UI on `/a/[slug]`: list (client-loaded, since the page is cached; paginate 50), form for signed-in writers, reply, delete own, sign-in prompt, locked notice. pgTAP + e2e.
+- **Done through 5.2.** Push `20261121010000_comments.sql` before merging (the home build calls `top_stories`, which now uses `comment_count`); check the dry run says "Remote database is up to date" before merging. Local: 291 pgTAP checks, 164 unit tests, 126 Playwright tests (2 desktop-only). `pnpm db:samples` includes likes and comments.
+- **Next: 5.3 follows + Following feed.** `follows (follower_id default auth.uid(), followee_id, created_at, primary key (follower_id, followee_id), check follower <> followee)`. Who-follows-whom: decide privacy (suggest: follower counts public via a DEFINER `follow_counts(profile_id)`, rows readable only by the follower). `can_write()` to follow; unfollow own anytime. Explicit grants + `090` row. `feed_following(p_before_published_at, p_before_id, p_limit)` (SECURITY INVOKER, keyset like `feed_latest`, only stories by people the caller follows). UI: Follow button on `/u/[handle]` and the story byline (client, like LikeButton); Following tab on the home tabs → `/following` (dynamic, per user; signed out → sign-in prompt). pgTAP + e2e.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -48,7 +48,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 
 ## Phase 5 — Community
 - [x] 5.1 Likes (reactions) + counts; pgTAP
-- [ ] 5.2 Comments (one-level replies, delete own, lock); rate limit; pgTAP
+- [x] 5.2 Comments (one-level replies, delete own, lock); rate limit; pgTAP
 - [ ] 5.3 Follows + Following feed
 - [ ] 5.4 Bookmarks + `/saved`
 - [ ] 5.5 Contributor stats on profile

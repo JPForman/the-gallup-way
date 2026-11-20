@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleView } from "@/components/article/article-view";
+import { CommentsSection } from "@/components/article/comments-section";
 import { LikeButton } from "@/components/article/like-button";
 import { ViewCounter } from "@/components/article/view-counter";
 import { articleImageUrl, getPublishedArticle } from "@/lib/db/articles";
@@ -50,6 +51,11 @@ export default async function ArticlePage({ params }: Props) {
         imageUrl={articleImageUrl}
         actions={article.slug ? <LikeButton articleId={article.id} slug={article.slug} /> : null}
       />
+      {article.slug ? (
+        <div className="mx-auto w-full max-w-2xl px-4 pb-12">
+          <CommentsSection articleId={article.id} slug={article.slug} />
+        </div>
+      ) : null}
       <ViewCounter articleId={article.id} />
     </main>
   );

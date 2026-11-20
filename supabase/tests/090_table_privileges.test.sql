@@ -15,6 +15,7 @@ insert into expected values
   ('article_views',         'S---', 'S---'),
   ('articles',              'S---', 'SIUD'),
   ('categories',            'S---', 'S---'),
+  ('comments',              'S---', 'SI--'),
   ('corrections',           'S---', 'SI--'),
   ('profiles',              'S---', 'S-U-'),
   ('reactions',             '----', 'SI-D');

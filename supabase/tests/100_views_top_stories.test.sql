@@ -57,11 +57,11 @@ select throws_ok($$update public.article_views set views = 1000$$, '42501', null
 -- top_stories
 -- ---------------------------------------------------------------------------
 reset role;
--- Give "old" lots of views and "mid" a few.
+-- Give "old" lots of views and "mid" a few. Days are Gallup-local, like record_view().
 insert into public.article_views (article_id, day, views) values
-  ('acac0000-0000-0000-0000-0000000000a3', current_date - 1, 2000),
-  ('acac0000-0000-0000-0000-0000000000a2', current_date, 100),
-  ('acac0000-0000-0000-0000-0000000000a4', current_date, 100000);
+  ('acac0000-0000-0000-0000-0000000000a3', (now() at time zone 'America/Denver')::date - 1, 2000),
+  ('acac0000-0000-0000-0000-0000000000a2', (now() at time zone 'America/Denver')::date, 100),
+  ('acac0000-0000-0000-0000-0000000000a4', (now() at time zone 'America/Denver')::date, 100000);
 
 set local role anon;
 set local request.jwt.claims to '{"role":"anon"}';
