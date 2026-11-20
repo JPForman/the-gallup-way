@@ -5,6 +5,7 @@ import { Avatar } from "@/components/avatar";
 import { StoryGrid } from "@/components/feed/story-card";
 import { FollowButton } from "@/components/follow-button";
 import { ProfileStatsList } from "@/components/profile-stats";
+import { ReportButton } from "@/components/report-button";
 import { articleImageUrl, listAuthorArticles } from "@/lib/db/articles";
 import { encodeCursor } from "@/lib/feed/cursor";
 import { avatarUrl, getProfileByHandle, getProfileStats } from "@/lib/db/profiles";
@@ -71,13 +72,14 @@ export default async function ProfilePage({ params }: Props) {
         <OwnProfileActions profileId={profile.id} />
       </header>
 
-      <div className="mt-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <FollowButton
           profileId={profile.id}
           name={profile.display_name}
           signInNext={`/u/${profile.handle}`}
           showCounts
         />
+        <ReportButton target={{ type: "profile", id: profile.id }} signInNext={`/u/${profile.handle}`} />
       </div>
 
       {profile.bio ? (
