@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 5.4.** Push `20261122000000_bookmarks.sql` before merging (`/saved` and the Save button call `saved_articles`/`bookmarks`); check the dry run says "Remote database is up to date" before merging. Local: 324 pgTAP checks, 174 unit tests, 134 Playwright tests (2 desktop-only). `pnpm db:samples` includes likes, comments, follows and Rosa's bookmarks.
-- **Next: 5.5 contributor stats on profile.** On `/u/[handle]`: stories published, total likes, total comments received, member since (and maybe total views). One SECURITY DEFINER `profile_stats(p_profile_id)` counting only published, non-deleted stories (likes/comments via existing visibility rules; no private data such as bookmarks or who-follows-whom). Profile page is cached, so load in the browser or include in the ISR render (decide; ISR is simpler and fine at 60s). Revisit the `090` test only if a table is added. pgTAP + unit + e2e. This finishes Phase 5.
+- **Done through 5.5 (Phase 5 complete).** Push `20261122000000_bookmarks.sql` (5.4) and `20261122010000_profile_stats.sql` (5.5) before merging their PRs (the profile build calls `profile_stats`/`feed_author`); check the dry run says "Remote database is up to date" before merging. Local: 332 pgTAP checks, 176 unit tests, 138 Playwright tests (2 desktop-only).
+- **Next: Phase 6, starting with 6.1** (see the Phase 6 list below).
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -51,7 +51,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 5.2 Comments (one-level replies, delete own, lock); rate limit; pgTAP
 - [x] 5.3 Follows + Following feed (counts public, who-follows-whom private)
 - [x] 5.4 Bookmarks + `/saved` (private; anyone signed in may save)
-- [ ] 5.5 Contributor stats on profile
+- [x] 5.5 Contributor stats on profile (plus the writer's story list, which was still a placeholder)
 
 ## Phase 6 — Safety and admin
 - [ ] 6.1 Migration: `reports` (priority), `moderation_actions`, staff action SQL functions; pgTAP

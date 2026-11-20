@@ -46,6 +46,9 @@ function revalidatePublicPages(slug: string | null) {
   revalidatePath("/latest");
   for (const c of CATEGORIES) revalidatePath(`/c/${c.slug}`);
   if (slug) revalidatePath(`/a/${slug}`);
+  // Profile pages list the writer's stories and stats.
+  revalidatePath("/u/[handle]", "page");
+  revalidatePath("/u/[handle]/stories/[cursor]", "page");
 }
 
 /** Notices the edit page can show after a redirect (see EDIT_NOTICES). */

@@ -70,3 +70,12 @@ export async function searchWriters(client: Client, query: string): Promise<Writ
   if (error) throw error;
   return (data ?? []) as WriterResult[];
 }
+
+export type ProfileStats = { stories: number; likes: number; comments: number; views: number };
+
+/** Public contributor stats (published stories only). */
+export async function getProfileStats(client: Client, profileId: string): Promise<ProfileStats> {
+  const { data, error } = await client.rpc("profile_stats", { p_profile_id: profileId });
+  if (error) throw error;
+  return data?.[0] ?? { stories: 0, likes: 0, comments: 0, views: 0 };
+}
