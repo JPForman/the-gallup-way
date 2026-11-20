@@ -9,6 +9,7 @@ function c(id: number, parent: number | null, deleted = false): CommentRow {
     body: deleted ? "" : `c${id}`,
     created_at: "2026-11-19T18:00:00Z",
     deleted_at: deleted ? "2026-11-19T19:00:00Z" : null,
+    removed_at: null,
     author: null,
   };
 }

@@ -19,6 +19,8 @@ insert into expected values
   ('corrections',           'S---', 'SI--'),
   ('follows',               'S---', 'SI-D'),
   ('bookmarks',             '----', 'SI-D'),
+  ('reports',               '----', 'SI--'),
+  ('moderation_actions',    '----', 'S---'),
   ('profiles',              'S---', 'S-U-'),
   ('reactions',             '----', 'SI-D');
 

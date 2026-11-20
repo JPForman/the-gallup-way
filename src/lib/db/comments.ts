@@ -10,6 +10,8 @@ export type CommentRow = {
   body: string;
   created_at: string;
   deleted_at: string | null;
+  /** Set when staff removed it (deleted_at is set too). */
+  removed_at: string | null;
   author: { handle: string; display_name: string; avatar_path: string | null } | null;
 };
 
@@ -18,7 +20,7 @@ export type CommentThread = { comment: CommentRow; replies: CommentRow[] };
 export const COMMENTS_PAGE_SIZE = 50;
 
 const COLUMNS =
-  "id, parent_id, author_id, body, created_at, deleted_at, author:profiles!comments_author_id_fkey (handle, display_name, avatar_path)";
+  "id, parent_id, author_id, body, created_at, deleted_at, removed_at, author:profiles!comments_author_id_fkey (handle, display_name, avatar_path)";
 
 /**
  * A story's comment threads, oldest first: up to `limit` top-level comments
