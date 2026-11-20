@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { newSignedInUser } from "./helpers/auth";
-import { sql } from "./helpers/db";
+import { ACCEPTED_SIGNUP, sql } from "./helpers/db";
 import { gotoReady } from "./helpers/page";
 import { storyByAnotherAuthor } from "./helpers/stories";
 
@@ -71,7 +71,7 @@ test("comments removed by a moderator show a placeholder and keep their replies"
   const { slug, id, authorId } = await storyByAnotherAuthor("modremoved");
   const modId = randomUUID();
   await sql`insert into auth.users (id, email, raw_user_meta_data) values (${modId}, ${`mod-${modId.slice(0, 8)}@example.invalid`},
-    ${sql.json({ handle: `mod_${modId.slice(0, 8)}`, display_name: "Moderator", age_confirmed: true, accepted_terms_version: 1, accepted_privacy_version: 1 })})`;
+    ${sql.json({ handle: `mod_${modId.slice(0, 8)}`, display_name: "Moderator", ...ACCEPTED_SIGNUP })})`;
   await sql`update public.profiles set role = 'moderator' where id = ${modId}`;
   const [top] = await sql<{ id: number }[]>`
     insert into public.comments (article_id, author_id, body) values (${id}, ${authorId}, 'Something rude') returning id`;

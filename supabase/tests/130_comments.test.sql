@@ -8,13 +8,13 @@ delete from public.articles;
 -- author, reader, other, sus (suspended)
 insert into auth.users (id, email, raw_user_meta_data) values
   ('afaf0000-0000-0000-0000-000000000001', 'author@test.local',
-   '{"handle":"cauthor","display_name":"Author","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"cauthor","display_name":"Author","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('afaf0000-0000-0000-0000-000000000002', 'reader@test.local',
-   '{"handle":"creader","display_name":"Reader","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"creader","display_name":"Reader","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('afaf0000-0000-0000-0000-000000000003', 'other@test.local',
-   '{"handle":"cother","display_name":"Other","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"cother","display_name":"Other","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('afaf0000-0000-0000-0000-000000000004', 'sus@test.local',
-   '{"handle":"csus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"csus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set suspended_until = now() + interval '1 day' where handle = 'csus';
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at, comments_locked) values

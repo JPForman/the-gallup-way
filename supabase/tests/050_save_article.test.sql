@@ -4,11 +4,11 @@ select plan(16);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('dddddddd-0000-0000-0000-000000000001', 'sam@test.local',
-   '{"handle":"samsave","display_name":"Sam","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"samsave","display_name":"Sam","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('dddddddd-0000-0000-0000-000000000002', 'lee@test.local',
-   '{"handle":"leesave","display_name":"Lee","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"leesave","display_name":"Lee","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('dddddddd-0000-0000-0000-000000000003', 'kit@test.local',
-   '{"handle":"kitsave","display_name":"Kit","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"kitsave","display_name":"Kit","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set suspended_until = now() + interval '1 day' where handle = 'kitsave';
 
 set local role anon;

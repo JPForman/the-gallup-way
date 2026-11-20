@@ -7,15 +7,15 @@ delete from public.articles;
 -- reader, author, mod (moderator), admin, mod2 (moderator)
 insert into auth.users (id, email, raw_user_meta_data) values
   ('e0e00000-0000-0000-0000-000000000001', 'mreader@test.local',
-   '{"handle":"mreader","display_name":"Reader","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"mreader","display_name":"Reader","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('e0e00000-0000-0000-0000-000000000002', 'mauthor@test.local',
-   '{"handle":"mauthor","display_name":"Author","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"mauthor","display_name":"Author","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('e0e00000-0000-0000-0000-000000000003', 'mmod@test.local',
-   '{"handle":"mmod","display_name":"Mod","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"mmod","display_name":"Mod","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('e0e00000-0000-0000-0000-000000000004', 'madmin@test.local',
-   '{"handle":"madmin","display_name":"Admin","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"madmin","display_name":"Admin","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('e0e00000-0000-0000-0000-000000000005', 'mmod2@test.local',
-   '{"handle":"mmod2","display_name":"Mod Two","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"mmod2","display_name":"Mod Two","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set role = 'moderator' where handle in ('mmod', 'mmod2');
 update public.profiles set role = 'admin' where handle = 'madmin';
 

@@ -7,9 +7,9 @@ delete from public.articles;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('acac0000-0000-0000-0000-000000000001', 'top@test.local',
-   '{"handle":"toptest","display_name":"Top Writer","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"toptest","display_name":"Top Writer","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('acac0000-0000-0000-0000-000000000002', 'reader@test.local',
-   '{"handle":"readertest","display_name":"Reader","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"readertest","display_name":"Reader","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 
 -- new: 1h old; mid: 10h old; old: 3 days; stale: 8 days (outside the window);
 -- draft: never published.

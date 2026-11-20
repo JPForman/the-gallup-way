@@ -8,13 +8,13 @@ delete from public.articles;
 -- author, fan, fan2, sus (suspended)
 insert into auth.users (id, email, raw_user_meta_data) values
   ('aeae0000-0000-0000-0000-000000000001', 'author@test.local',
-   '{"handle":"likeauthor","display_name":"Author","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"likeauthor","display_name":"Author","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('aeae0000-0000-0000-0000-000000000002', 'fan@test.local',
-   '{"handle":"likefan","display_name":"Fan","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"likefan","display_name":"Fan","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('aeae0000-0000-0000-0000-000000000003', 'fan2@test.local',
-   '{"handle":"likefan2","display_name":"Fan Two","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"likefan2","display_name":"Fan Two","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('aeae0000-0000-0000-0000-000000000004', 'sus@test.local',
-   '{"handle":"likesus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"likesus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set suspended_until = now() + interval '1 day' where handle = 'likesus';
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at) values

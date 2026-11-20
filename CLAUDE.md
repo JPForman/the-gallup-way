@@ -63,7 +63,7 @@ src/
     contact/
     auth/                 # sign-in, sign-up, callback, reset
   components/             # UI components (+ *.test.tsx next to them); ui/ = shadcn
-  content/                # static copy (legal.ts: draft legal pages)
+  content/                # static copy (legal.ts: legal pages, v2 text; agreements.ts: versions + hashes)
   lib/
     site.ts               # SITE_NAME and other constants
     supabase/             # server.ts, client.ts, middleware.ts, types.ts (generated)
@@ -214,7 +214,8 @@ Local URLs: API http://127.0.0.1:54321 · Studio http://127.0.0.1:54323 · Mailp
 - Site copy calls it a "community board". Never "our reporting" or "our newsroom".
 - Staff may hide, remove or restore content; they **do not rewrite user posts**. No admin "edit article" feature.
 - Every publish requires ticking the **Contributor Agreement** checkbox. Store a row in `agreement_acceptances` (user, article, agreement version, timestamp, IP hash).
-- **Agreement versioning:** Terms, Privacy and Contributor Agreement text lives in `src/content/legal.ts`; versions and SHA-256 hashes live in `src/content/agreements.ts` and in `public.agreement_versions`. Changing the text makes `pnpm test` fail until you bump the version, update the hash, and add a migration inserting the new row. A new Terms or Privacy version blocks writing until each user re-accepts (`can_write()`).
+- **Agreement versioning:** Terms, Privacy and Contributor Agreement text lives in `src/content/legal.ts`; versions and SHA-256 hashes live in `src/content/agreements.ts` and in `public.agreement_versions`. Changing the text makes `pnpm test` fail until you bump the version, update the hash, and add a migration inserting the new row. A new Terms or Privacy version blocks writing until each user re-accepts (`can_write()`). Test fixtures follow the current version: pgTAP/seed metadata uses the literal version (update all `"accepted_terms_version":N` on a bump), e2e uses `ACCEPTED_SIGNUP` / `AGREEMENTS` (no literals). Current: v2 for all three (7.1).
+- **Legal pages (7.1):** each `LegalPage` has an `updated` date shown on the page. `OPERATOR` in `src/lib/site.ts` (contact email, DMCA agent; `null` until the owner fills them in) feeds `/contact` and the agent block on `/legal/dmca`; keep operator details out of the versioned texts, so changing them needs no re-accept. `LEGAL_DRAFT = true` shows a "draft, pending legal review" note; set it to `false` after lawyer review. The Terms choose New Mexico law.
 - **Acceptance records:** sign-up acceptances (Terms, Privacy, 18+) come from sign-up metadata via the `handle_new_user` trigger, because no session exists before email confirmation. Later acceptances are client inserts; a trigger forces owner, current version and `now()`. Rows are append-only. On account deletion `user_id` becomes null, so the record survives but is anonymized. IPs are stored only as `sha256(IP_HASH_SALT || ip)`.
 - Byline on every post: "By {display_name} · Posted by a community member", plus the disclaimer that the views and claims are the author's and have not been independently verified by the site. Opinion pieces are labeled "Opinion".
 - Report button on every article, comment and profile. Reported items enter the admin queue.

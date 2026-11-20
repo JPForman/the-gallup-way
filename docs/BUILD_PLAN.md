@@ -4,7 +4,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 
 ## Current status (update at the end of each session)
 - **Done through 6.6 (Phase 6 complete).** Before merging 6.6: push `20261125000000_account_deletion.sql` and add `SUPABASE_SERVICE_ROLE_KEY` to Vercel (Production + Preview, not exposed to the browser). Check the dry run says "Remote database is up to date". Local: 419 pgTAP checks, 193 unit tests, 162 Playwright tests (8 desktop-only).
-- **Next: Phase 7 (legal and launch prep)**, starting with 7.1 (see the Phase 7 list below).
+- **Next: 7.2** (DMCA agent registration, an owner task), then 7.3. Owner to-dos from 7.1: fill in `OPERATOR` (contact email, DMCA agent) in `src/lib/site.ts`, have a lawyer review `src/content/legal.ts`, then set `LEGAL_DRAFT = false`.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then). Add `SUPABASE_SERVICE_ROLE_KEY` to Vercel for account deletion (6.6).
 
 ## Phase 1 — Foundation
@@ -62,7 +62,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 6.6 Account deletion (anonymize or delete) + e2e
 
 ## Phase 7 — Legal and launch prep
-- [ ] 7.1 Final legal pages (Terms, Privacy, Guidelines, Contributor Agreement, Corrections, DMCA, Contact) — lawyer review recommended
+- [x] 7.1 Final legal pages (Terms, Privacy, Guidelines, Contributor Agreement, Corrections, DMCA, Contact) — lawyer review recommended
 - [ ] 7.2 Register DMCA designated agent at copyright.gov (operator task)
 - [ ] 7.3 Accessibility pass (axe in Playwright), Lighthouse check
 - [ ] 7.4 Security review (RLS audit, headers/CSP, service-role usage)

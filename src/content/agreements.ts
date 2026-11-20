@@ -13,18 +13,18 @@ import type { LegalSlug } from "./legal";
 export const AGREEMENTS = {
   terms: {
     slug: "terms",
-    version: 1,
-    sha256: "bc7a6edcb0ad357ba0906780abc7f9ced54beb9d832ac22dafc839e60308bb7e",
+    version: 2,
+    sha256: "35eca39860160b22b1c7b602f94fd08fc0ef9d29b1c9e62da17403757b9ce38f",
   },
   privacy: {
     slug: "privacy",
-    version: 1,
-    sha256: "6f5e66b487b42b45e6c360acc72cf4e4a48c5d84fb068646b10d27f739abf83a",
+    version: 2,
+    sha256: "44965e716a0c3050745d7e2aec103188b647ddc71b770c430354d548c5d06420",
   },
   contributor: {
     slug: "contributor-agreement",
-    version: 1,
-    sha256: "0734363b20cb4f8cf2ecd1b7a7c9ba64d0a212787a4827d5b8c933b5da913ec7",
+    version: 2,
+    sha256: "7b1ec3090f4f286aaff4734bcbc2e4f7ff12b3553f6d36985f0b179078f48d52",
   },
 } as const satisfies Record<string, { slug: LegalSlug; version: number; sha256: string }>;
 

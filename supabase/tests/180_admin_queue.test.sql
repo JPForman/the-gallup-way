@@ -7,13 +7,13 @@ delete from public.reports;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('f0f00000-0000-0000-0000-000000000001', 'qr1@test.local',
-   '{"handle":"qreader1","display_name":"Reader One","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"qreader1","display_name":"Reader One","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('f0f00000-0000-0000-0000-000000000002', 'qr2@test.local',
-   '{"handle":"qreader2","display_name":"Reader Two","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"qreader2","display_name":"Reader Two","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('f0f00000-0000-0000-0000-000000000003', 'qa@test.local',
-   '{"handle":"qauthor","display_name":"Queue Author","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"qauthor","display_name":"Queue Author","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('f0f00000-0000-0000-0000-000000000004', 'qm@test.local',
-   '{"handle":"qmod","display_name":"Queue Mod","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"qmod","display_name":"Queue Mod","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set role = 'moderator' where handle = 'qmod';
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at) values
