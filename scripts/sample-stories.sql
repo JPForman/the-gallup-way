@@ -165,4 +165,18 @@ where a.id::text like '5a5a0000-0000-4000-8000-0000000001%'
   and a.author_id <> u.id
   and right(a.id::text, 2)::int in (1, 2, 5, 6, 8, 12);
 
+-- A short conversation on the crosswalk opinion piece, and a comment on the soccer story.
+insert into public.comments (article_id, author_id, body, created_at) values
+  ('5a5a0000-0000-4000-8000-000000000105', '5a5a0000-0000-4000-8000-000000000001',
+   'Agreed. The corner by the elementary school is the worst at drop-off time.', now() - interval '20 hours'),
+  ('5a5a0000-0000-4000-8000-000000000105', '5a5a0000-0000-4000-8000-000000000003',
+   'A walking survey is a great idea. Count me in if you organize one.', now() - interval '18 hours'),
+  ('5a5a0000-0000-4000-8000-000000000102', '5a5a0000-0000-4000-8000-000000000001',
+   'Congratulations to the team and the coaches!', now() - interval '5 hours');
+insert into public.comments (article_id, author_id, parent_id, body, created_at)
+select '5a5a0000-0000-4000-8000-000000000105', '5a5a0000-0000-4000-8000-000000000002', c.id,
+  'Thanks, Rosa. I''ll ask the school about a date in the spring.', now() - interval '19 hours'
+from public.comments c
+where c.article_id = '5a5a0000-0000-4000-8000-000000000105' and c.author_id = '5a5a0000-0000-4000-8000-000000000001';
+
 select count(*) as sample_stories from public.articles where id::text like '5a5a0000-0000-4000-8000-0000000001%';

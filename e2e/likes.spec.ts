@@ -1,27 +1,11 @@
-import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { newSignedInUser } from "./helpers/auth";
 import { sql, userIdByEmail } from "./helpers/db";
 import { gotoReady } from "./helpers/page";
-
-/** A published story by a separate (password-less) author, unique to this test. */
-async function storyByAnotherAuthor() {
-  const authorId = randomUUID();
-  const tag = authorId.slice(0, 8);
-  await sql`insert into auth.users (id, email, raw_user_meta_data) values (${authorId}, ${`author-${tag}@example.invalid`},
-    ${sql.json({ handle: `author_${tag}`, display_name: "Like Author", age_confirmed: true, accepted_terms_version: 1, accepted_privacy_version: 1 })})`;
-  const slug = `likeable-${tag}`;
-  const [row] = await sql<{ id: string }[]>`
-    insert into public.articles (author_id, slug, title, category, body_json, status, submitted_at, published_at)
-    values (${authorId}, ${slug}, ${`Likeable story ${tag}`}, 'community',
-      '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Like me."}]}]}',
-      'published', now(), now())
-    returning id`;
-  return { slug, id: row!.id };
-}
+import { storyByAnotherAuthor } from "./helpers/stories";
 
 test("readers like and unlike a story; signed-out readers are asked to sign in", async ({ page, browser }) => {
-  const { slug, id } = await storyByAnotherAuthor();
+  const { slug, id } = await storyByAnotherAuthor("likeable");
 
   const anon = await browser.newPage();
   await anon.goto(`/a/${slug}`);

@@ -337,6 +337,58 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          article_id: string
+          author_id: string | null
+          body: string
+          created_at: string
+          deleted_at: string | null
+          id: number
+          parent_id: number | null
+        }
+        Insert: {
+          article_id: string
+          author_id?: string | null
+          body: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: never
+          parent_id?: number | null
+        }
+        Update: {
+          article_id?: string
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: never
+          parent_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corrections: {
         Row: {
           article_id: string
@@ -472,6 +524,15 @@ export type Database = {
       can_publish_directly: { Args: never; Returns: boolean }
       can_view_article: { Args: { p_article_id: string }; Returns: boolean }
       can_write: { Args: never; Returns: boolean }
+      comment_count: { Args: { p_article_id: string }; Returns: number }
+      comments_context: {
+        Args: { p_article_id: string }
+        Returns: {
+          can_comment: boolean
+          comment_count: number
+          locked: boolean
+        }[]
+      }
       current_agreement_version: {
         Args: { k: Database["public"]["Enums"]["agreement_kind"] }
         Returns: number
@@ -480,6 +541,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      delete_comment: { Args: { p_comment_id: number }; Returns: boolean }
       feed_latest: {
         Args: {
           p_before_id?: string

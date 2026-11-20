@@ -92,7 +92,8 @@ test("Top ranks this week's stories by engagement; views count once per reader p
   const hot = rows.find((r) => r.slug.endsWith("-hot"))!;
   const warm = rows.find((r) => r.slug.endsWith("-warm"))!;
   await sql`insert into public.article_views (article_id, day, views)
-    values (${hot.id}, current_date, 2000000), (${warm.id}, current_date, 1000000)`;
+    values (${hot.id}, (now() at time zone 'America/Denver')::date, 2000000),
+           (${warm.id}, (now() at time zone 'America/Denver')::date, 1000000)`;
 
   try {
     // Publish through the app to revalidate the cached home page.
