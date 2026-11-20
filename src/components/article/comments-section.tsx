@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useId, useState, type FormEvent, type ReactNode } from "react";
 import { Avatar } from "@/components/avatar";
+import { ReportButton } from "@/components/report-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -105,11 +106,14 @@ function CommentBody({
   comment,
   mine,
   onDelete,
+  reportNext,
   children,
 }: {
   comment: CommentRow;
   mine: boolean;
   onDelete: (id: number) => Promise<void>;
+  /** Sign-in return path for the Report dialog. */
+  reportNext: string;
   children?: ReactNode;
 }) {
   const [confirming, setConfirming] = useState(false);
@@ -160,7 +164,9 @@ function CommentBody({
                 Delete
               </Button>
             )
-          ) : null}
+          ) : (
+            <ReportButton target={{ type: "comment", id: comment.id }} signInNext={reportNext} />
+          )}
         </div>
       </div>
     </div>
@@ -271,7 +277,12 @@ export function CommentsSection({ articleId, slug }: { articleId: string; slug: 
         <ul className="mt-6 space-y-6">
           {threads.map(({ comment, replies }) => (
             <li key={comment.id}>
-              <CommentBody comment={comment} mine={!!userId && comment.author_id === userId} onDelete={remove}>
+              <CommentBody
+                comment={comment}
+                mine={!!userId && comment.author_id === userId}
+                onDelete={remove}
+                reportNext={`/a/${slug}#comments`}
+              >
                 {ctx?.canComment && !comment.deleted_at ? (
                   <Button
                     type="button"
@@ -291,7 +302,12 @@ export function CommentsSection({ articleId, slug }: { articleId: string; slug: 
                     <ul aria-label={`Replies to ${comment.author?.display_name ?? "comment"}`} className="space-y-4">
                       {replies.map((r) => (
                         <li key={r.id}>
-                          <CommentBody comment={r} mine={!!userId && r.author_id === userId} onDelete={remove} />
+                          <CommentBody
+                            comment={r}
+                            mine={!!userId && r.author_id === userId}
+                            onDelete={remove}
+                            reportNext={`/a/${slug}#comments`}
+                          />
                         </li>
                       ))}
                     </ul>

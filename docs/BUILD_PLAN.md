@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 6.1.** Phase 5 is complete. Push `20261123000000_moderation.sql` and `20261123000100_moderation_log_fk_nulls.sql` before merging 6.1 (the comments UI selects `comments.removed_at`); check the dry run says "Remote database is up to date" before merging. Local: 376 pgTAP checks, 176 unit tests, 140 Playwright tests (2 desktop-only).
-- **Next: 6.2 report button/dialog** on stories, comments and profiles. Client dialog (reason radio group + details, required for "Other"), inserts into `reports` directly (RLS + trigger enforce rules; `PT429` and duplicate `23505` get friendly messages: "You already reported this"). Signed out → sign-in link; can't-write accounts → explain. Shared Zod schema `src/lib/validation/report.ts`. Unit + e2e (report → row in DB; duplicate message).
+- **Done through 6.2.** Push `20261123000000_moderation.sql` and `20261123000100_moderation_log_fk_nulls.sql` before merging 6.1 (6.2 has no migration); check the dry run says "Remote database is up to date" before merging. Local: 379 pgTAP checks, 185 unit tests, 144 Playwright tests (2 desktop-only).
+- **Next: 6.3 `/admin` dashboard** (staff only: server-side `is_staff()` check, 404 otherwise; dynamic, noindex). Stat tiles: open reports (high first), pending stories, new users this week. Tabs: Reports (open, priority then age, grouped by item with reasons/details), Pending review, New users, Log (`moderation_actions`). Item drawer: content preview, author history, prior actions, buttons calling the 6.1 staff RPCs with a required reason; revalidate public pages after hide/restore/approve. Server Actions are fine here (staff-only, low volume). Needs a staff-readable view of reports with target summaries (maybe a DEFINER `admin_report_queue()` / `admin_stats()` RPC). Unit + e2e with a seeded moderator.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -55,7 +55,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 
 ## Phase 6 — Safety and admin
 - [x] 6.1 Migration: `reports` (priority), `moderation_actions`, staff action SQL functions; pgTAP
-- [ ] 6.2 Report button/dialog on articles, comments, profiles
+- [x] 6.2 Report button/dialog on articles, comments, profiles
 - [ ] 6.3 `/admin` dashboard: stat tiles, Reports / Pending / New users / Log tabs, item drawer with actions
 - [ ] 6.4 Suspend/ban, role change (admin), category management
 - [ ] 6.5 Soft delete + restore; revision history view for staff

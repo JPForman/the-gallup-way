@@ -6,6 +6,7 @@ import { LikeButton } from "@/components/article/like-button";
 import { SaveButton } from "@/components/article/save-button";
 import { ViewCounter } from "@/components/article/view-counter";
 import { FollowButton } from "@/components/follow-button";
+import { ReportButton } from "@/components/report-button";
 import { articleImageUrl, getPublishedArticle } from "@/lib/db/articles";
 import { excerpt, richTextToPlain } from "@/lib/richtext";
 import { createPublicClient } from "@/lib/supabase/public";
@@ -63,6 +64,7 @@ export default async function ArticlePage({ params }: Props) {
                   signInNext={`/a/${article.slug}`}
                 />
               ) : null}
+              <ReportButton target={{ type: "article", id: article.id }} signInNext={`/a/${article.slug}`} />
             </div>
           ) : null
         }
