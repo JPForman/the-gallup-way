@@ -319,6 +319,39 @@ export type Database = {
           },
         ]
       }
+      bookmarks: {
+        Row: {
+          article_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          user_id?: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           name: string
@@ -673,6 +706,28 @@ export type Database = {
           p_title?: string
         }
         Returns: Json
+      }
+      saved_articles: {
+        Args: {
+          p_before_id?: string
+          p_before_saved_at?: string
+          p_limit?: number
+        }
+        Returns: {
+          author_display_name: string
+          author_handle: string
+          category: string
+          content_type: Database["public"]["Enums"]["content_type"]
+          dek: string
+          excerpt: string
+          id: string
+          image_alt: string
+          image_path: string
+          published_at: string
+          saved_at: string
+          slug: string
+          title: string
+        }[]
       }
       search_articles: {
         Args: { p_limit?: number; p_offset?: number; p_query: string }

@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 5.3.** Push `20261121020000_follows.sql` before merging (`/following` and the follow buttons call `follow_context`/`feed_following`); check the dry run says "Remote database is up to date" before merging. Local: 310 pgTAP checks, 170 unit tests, 130 Playwright tests (2 desktop-only). `pnpm db:samples` includes likes, comments and follows.
-- **Next: 5.4 bookmarks + `/saved`.** `bookmarks (user_id default auth.uid(), article_id, created_at, primary key (user_id, article_id))`, private to the user (select/insert/delete own; anyone signed in, even suspended, may bookmark since it's private data?: decide; suggest `auth.uid() is not null` only). Explicit grants + `090` row. Save button next to Like/Follow on stories (client, optimistic). `/saved` dynamic, `noindex`, newest saved first, keyset on `(created_at, article_id)`; hidden/deleted stories drop out. pgTAP + e2e.
+- **Done through 5.4.** Push `20261122000000_bookmarks.sql` before merging (`/saved` and the Save button call `saved_articles`/`bookmarks`); check the dry run says "Remote database is up to date" before merging. Local: 324 pgTAP checks, 174 unit tests, 134 Playwright tests (2 desktop-only). `pnpm db:samples` includes likes, comments, follows and Rosa's bookmarks.
+- **Next: 5.5 contributor stats on profile.** On `/u/[handle]`: stories published, total likes, total comments received, member since (and maybe total views). One SECURITY DEFINER `profile_stats(p_profile_id)` counting only published, non-deleted stories (likes/comments via existing visibility rules; no private data such as bookmarks or who-follows-whom). Profile page is cached, so load in the browser or include in the ISR render (decide; ISR is simpler and fine at 60s). Revisit the `090` test only if a table is added. pgTAP + unit + e2e. This finishes Phase 5.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -50,7 +50,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 5.1 Likes (reactions) + counts; pgTAP
 - [x] 5.2 Comments (one-level replies, delete own, lock); rate limit; pgTAP
 - [x] 5.3 Follows + Following feed (counts public, who-follows-whom private)
-- [ ] 5.4 Bookmarks + `/saved`
+- [x] 5.4 Bookmarks + `/saved` (private; anyone signed in may save)
 - [ ] 5.5 Contributor stats on profile
 
 ## Phase 6 — Safety and admin
