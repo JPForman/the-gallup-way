@@ -9,17 +9,17 @@ delete from public.articles;
 -- sus (suspended), noterms (hasn't accepted Terms/Privacy), modtest (moderator).
 insert into auth.users (id, email, raw_user_meta_data) values
   ('cccccccc-0000-0000-0000-000000000001', 'ana@test.local',
-   '{"handle":"ana","display_name":"Ana","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"ana","display_name":"Ana","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('cccccccc-0000-0000-0000-000000000002', 'vet@test.local',
-   '{"handle":"vet","display_name":"Vet","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"vet","display_name":"Vet","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('cccccccc-0000-0000-0000-000000000003', 'bo@test.local',
-   '{"handle":"bo","display_name":"Bo","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"bo","display_name":"Bo","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('cccccccc-0000-0000-0000-000000000004', 'sus@test.local',
-   '{"handle":"sus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"sus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('cccccccc-0000-0000-0000-000000000005', 'noterms@test.local',
    '{"handle":"noterms","display_name":"No Terms","age_confirmed":true}'),
   ('cccccccc-0000-0000-0000-000000000006', 'mod@test.local',
-   '{"handle":"modtest","display_name":"Mod","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"modtest","display_name":"Mod","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set approved_article_count = 3 where handle = 'vet';
 update public.profiles set suspended_until = now() + interval '1 day' where handle = 'sus';
 update public.profiles set role = 'moderator' where handle = 'modtest';

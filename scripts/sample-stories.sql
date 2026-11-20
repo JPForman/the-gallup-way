@@ -11,11 +11,11 @@ delete from auth.users where id in (
 -- Three writers without passwords (they can't sign in).
 insert into auth.users (id, email, raw_user_meta_data) values
   ('5a5a0000-0000-4000-8000-000000000001', 'rosa.sample@example.invalid',
-   '{"handle":"rosa_sample","display_name":"Rosa Yazzie","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"rosa_sample","display_name":"Rosa Yazzie","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('5a5a0000-0000-4000-8000-000000000002', 'dan.sample@example.invalid',
-   '{"handle":"dan_sample","display_name":"Dan Morales","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"dan_sample","display_name":"Dan Morales","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('5a5a0000-0000-4000-8000-000000000003', 'lena.sample@example.invalid',
-   '{"handle":"lena_sample","display_name":"Lena Chee","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"lena_sample","display_name":"Lena Chee","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set bio = 'Retired teacher. Writes about schools, gardens and the people who keep them going.'
   where id = '5a5a0000-0000-4000-8000-000000000001';
 update public.profiles set bio = 'Coaches youth soccer on weekends. Covers sports and the occasional potluck.'

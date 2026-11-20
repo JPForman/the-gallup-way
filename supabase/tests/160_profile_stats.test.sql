@@ -6,9 +6,9 @@ delete from public.articles;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('d0d00000-0000-0000-0000-000000000001', 'sw@test.local',
-   '{"handle":"swriter","display_name":"Stats Writer","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"swriter","display_name":"Stats Writer","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('d0d00000-0000-0000-0000-000000000002', 'sr@test.local',
-   '{"handle":"sreader","display_name":"Stats Reader","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"sreader","display_name":"Stats Reader","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at) values
   ('d0d00000-0000-0000-0000-0000000000a1', 'd0d00000-0000-0000-0000-000000000001', 's-old', 'Stats story older', 'news',

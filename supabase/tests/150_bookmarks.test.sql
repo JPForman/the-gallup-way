@@ -6,11 +6,11 @@ delete from public.articles;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('c0c00000-0000-0000-0000-000000000001', 'reader@test.local',
-   '{"handle":"breader","display_name":"Reader","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"breader","display_name":"Reader","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('c0c00000-0000-0000-0000-000000000002', 'bw@test.local',
-   '{"handle":"bwriter","display_name":"Writer","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"bwriter","display_name":"Writer","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('c0c00000-0000-0000-0000-000000000003', 'bsus@test.local',
-   '{"handle":"bsus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"bsus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set suspended_until = now() + interval '1 day' where handle = 'bsus';
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at) values

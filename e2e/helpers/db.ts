@@ -1,3 +1,4 @@
+import { AGREEMENTS } from "../../src/content/agreements";
 import postgres from "postgres";
 
 /**
@@ -17,3 +18,10 @@ export async function userIdByEmail(email: string): Promise<string> {
   if (!id) throw new Error(`No user ${email}`);
   return id;
 }
+
+/** Sign-up metadata for fixture users: 18+ and the current Terms and Privacy Policy. */
+export const ACCEPTED_SIGNUP = {
+  age_confirmed: true,
+  accepted_terms_version: AGREEMENTS.terms.version,
+  accepted_privacy_version: AGREEMENTS.privacy.version,
+};

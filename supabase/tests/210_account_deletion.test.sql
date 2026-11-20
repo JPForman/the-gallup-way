@@ -6,13 +6,13 @@ delete from public.articles;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('c3c30000-0000-0000-0000-000000000001', 'leave1@test.local',
-   '{"handle":"leaver1","display_name":"Leaver One","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"leaver1","display_name":"Leaver One","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('c3c30000-0000-0000-0000-000000000002', 'leave2@test.local',
-   '{"handle":"leaver2","display_name":"Leaver Two","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"leaver2","display_name":"Leaver Two","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('c3c30000-0000-0000-0000-000000000003', 'stay@test.local',
-   '{"handle":"stayer","display_name":"Stayer","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"stayer","display_name":"Stayer","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('c3c30000-0000-0000-0000-000000000004', 'boss@test.local',
-   '{"handle":"bossadmin","display_name":"Boss","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"bossadmin","display_name":"Boss","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set role = 'admin' where handle = 'bossadmin';
 update public.profiles set avatar_path = 'c3c30000-0000-0000-0000-000000000001/a.webp' where handle = 'leaver1';
 

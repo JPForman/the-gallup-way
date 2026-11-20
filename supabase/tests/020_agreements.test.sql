@@ -8,12 +8,12 @@ select plan(30);
 insert into auth.users (id, email, raw_user_meta_data) values
   -- Full sign-up metadata, as the app sends it
   ('aaaaaaaa-0000-0000-0000-000000000001', 'carol@test.local',
-   '{"handle":"carol","display_name":"Carol","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1,"ip_hash":"0000000000000000000000000000000000000000000000000000000000000abc"}'),
+   '{"handle":"carol","display_name":"Carol","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2,"ip_hash":"0000000000000000000000000000000000000000000000000000000000000abc"}'),
   -- Direct API sign-up with no agreement metadata
   ('aaaaaaaa-0000-0000-0000-000000000002', 'dave@test.local', '{"handle":"dave","display_name":"Dave"}'),
   -- Stale version + malformed IP hash
   ('aaaaaaaa-0000-0000-0000-000000000003', 'erin@test.local',
-   '{"handle":"erin","display_name":"Erin","age_confirmed":true,"accepted_terms_version":0,"accepted_privacy_version":1,"ip_hash":"1.2.3.4"}'),
+   '{"handle":"erin","display_name":"Erin","age_confirmed":true,"accepted_terms_version":0,"accepted_privacy_version":2,"ip_hash":"1.2.3.4"}'),
   -- Staff
   ('aaaaaaaa-0000-0000-0000-000000000004', 'staff@test.local', '{"handle":"stella","display_name":"Stella"}');
 update public.profiles set role = 'moderator' where id = 'aaaaaaaa-0000-0000-0000-000000000004';
@@ -25,9 +25,9 @@ select ok((select relrowsecurity from pg_class where oid = 'public.agreement_ver
   'RLS enabled on agreement_versions');
 select ok((select relrowsecurity from pg_class where oid = 'public.agreement_acceptances'::regclass),
   'RLS enabled on agreement_acceptances');
-select is(public.current_agreement_version('terms'), 1, 'terms v1 is current');
-select is(public.current_agreement_version('privacy'), 1, 'privacy v1 is current');
-select is(public.current_agreement_version('contributor'), 1, 'contributor v1 is current');
+select is(public.current_agreement_version('terms'), 2, 'terms v2 is current');
+select is(public.current_agreement_version('privacy'), 2, 'privacy v2 is current');
+select is(public.current_agreement_version('contributor'), 2, 'contributor v2 is current');
 
 -- ---------------------------------------------------------------------------
 -- Signup trigger
@@ -57,7 +57,7 @@ select is((select ip_hash from public.agreement_acceptances
 -- ---------------------------------------------------------------------------
 set local role anon;
 set local request.jwt.claims to '{"role":"anon"}';
-select is((select count(*)::int from public.agreement_versions), 3, 'anon can read versions');
+select is((select count(*)::int from public.agreement_versions), 6, 'anon can read versions');
 select throws_ok($$select count(*) from public.agreement_acceptances$$, '42501', null, 'anon cannot read acceptances');
 select throws_ok(
   $$insert into public.agreement_acceptances (kind, version) values ('terms', 1)$$,
@@ -116,7 +116,7 @@ select ok((select count(distinct user_id) from public.agreement_acceptances) >= 
 -- ---------------------------------------------------------------------------
 reset role;
 insert into public.agreement_versions (kind, version, text_sha256, effective_at)
-values ('terms', 2, repeat('b', 64), now() - interval '1 second');
+values ('terms', 3, repeat('b', 64), now() - interval '1 second');
 
 set local role authenticated;
 set local request.jwt.claims to '{"sub":"aaaaaaaa-0000-0000-0000-000000000001","role":"authenticated"}';

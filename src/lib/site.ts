@@ -6,6 +6,25 @@ export const SITE_TIMEZONE = "America/Denver";
 export const SITE_DESCRIPTION =
   "Local stories posted by Gallup community members. A community board, not a newspaper.";
 
+/**
+ * Operator contact details shown on /contact and /legal/dmca (NOT inside the
+ * versioned agreements, so filling them in doesn't force everyone to
+ * re-accept). The owner fills these in before launch; pages say "listed here
+ * before launch" while they're null.
+ */
+export const OPERATOR: {
+  /** Public contact address for questions, disputes and account help. */
+  contactEmail: string | null;
+  /** DMCA designated agent, exactly as registered at copyright.gov (step 7.2). */
+  dmcaAgent: { name: string; address: string; email: string; phone?: string } | null;
+} = {
+  contactEmail: null,
+  dmcaAgent: null,
+};
+
+/** Shows a "not reviewed by a lawyer yet" note on legal pages. Set to false after legal review. */
+export const LEGAL_DRAFT = true;
+
 export type NavLink = { href: string; label: string };
 
 /** Footer legal links (required on every page; see CLAUDE.md Legal guardrails). */

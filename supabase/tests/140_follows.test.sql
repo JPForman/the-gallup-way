@@ -8,13 +8,13 @@ delete from public.articles;
 -- fan, writer1, writer2, sus (suspended)
 insert into auth.users (id, email, raw_user_meta_data) values
   ('b0b00000-0000-0000-0000-000000000001', 'fan@test.local',
-   '{"handle":"ffan","display_name":"Fan","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"ffan","display_name":"Fan","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('b0b00000-0000-0000-0000-000000000002', 'w1@test.local',
-   '{"handle":"fwriter1","display_name":"Writer One","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"fwriter1","display_name":"Writer One","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('b0b00000-0000-0000-0000-000000000003', 'w2@test.local',
-   '{"handle":"fwriter2","display_name":"Writer Two","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"fwriter2","display_name":"Writer Two","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('b0b00000-0000-0000-0000-000000000004', 'sus@test.local',
-   '{"handle":"fsus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"fsus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set suspended_until = now() + interval '1 day' where handle = 'fsus';
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at) values

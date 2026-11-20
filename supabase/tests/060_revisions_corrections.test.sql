@@ -8,13 +8,13 @@ delete from public.articles;
 -- Users: ana (author), bo (another user), sus (suspended author), mod (moderator).
 insert into auth.users (id, email, raw_user_meta_data) values
   ('dddddddd-0000-0000-0000-000000000001', 'ana@test.local',
-   '{"handle":"ana","display_name":"Ana","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"ana","display_name":"Ana","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('dddddddd-0000-0000-0000-000000000002', 'bo@test.local',
-   '{"handle":"bo","display_name":"Bo","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"bo","display_name":"Bo","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('dddddddd-0000-0000-0000-000000000003', 'sus@test.local',
-   '{"handle":"sus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"sus","display_name":"Sus","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('dddddddd-0000-0000-0000-000000000004', 'mod@test.local',
-   '{"handle":"modtest","display_name":"Mod","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"modtest","display_name":"Mod","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set role = 'moderator' where handle = 'modtest';
 
 -- Fixtures (as the table owner): a published story, a draft, a pending story

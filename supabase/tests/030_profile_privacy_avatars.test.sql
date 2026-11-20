@@ -4,7 +4,7 @@ select plan(22);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('bbbbbbbb-0000-0000-0000-000000000001', 'pat@test.local',
-   '{"handle":"pat","display_name":"Pat","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"pat","display_name":"Pat","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('bbbbbbbb-0000-0000-0000-000000000002', 'quinn@test.local', '{"handle":"quinn","display_name":"Quinn"}');
 update public.profiles set suspended_until = now() + interval '1 day'
   where id = 'bbbbbbbb-0000-0000-0000-000000000002';

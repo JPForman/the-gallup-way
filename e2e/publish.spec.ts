@@ -1,3 +1,4 @@
+import { AGREEMENTS } from "../src/content/agreements";
 import { expect, test, type Page } from "@playwright/test";
 import { newSignedInUser } from "./helpers/auth";
 import { sql, userIdByEmail } from "./helpers/db";
@@ -35,7 +36,7 @@ test.describe("publishing", () => {
     const id = page.url().match(/\/edit\/([0-9a-f-]{36})/)![1]!;
     const rows = await sql<{ n: number }[]>`
       select count(*)::int as n from public.agreement_acceptances
-      where article_id = ${id} and kind = 'contributor' and version = 1
+      where article_id = ${id} and kind = 'contributor' and version = ${AGREEMENTS.contributor.version}
         and user_id = ${await userIdByEmail(email)}`;
     expect(rows[0]!.n).toBe(1);
 
