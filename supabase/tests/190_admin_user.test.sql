@@ -6,9 +6,9 @@ delete from public.articles;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('a1a10000-0000-0000-0000-000000000001', 'au1@test.local',
-   '{"handle":"auwriter","display_name":"Account Writer","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"auwriter","display_name":"Account Writer","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('a1a10000-0000-0000-0000-000000000002', 'au2@test.local',
-   '{"handle":"aumod","display_name":"Account Mod","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"aumod","display_name":"Account Mod","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set role = 'moderator' where handle = 'aumod';
 update public.profiles set suspended_until = now() + interval '7 days' where handle = 'auwriter';
 

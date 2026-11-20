@@ -7,7 +7,7 @@
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('5eed0000-0000-4000-8000-000000000001', 'sample-writer@example.invalid',
-   '{"handle":"sample_writer","display_name":"Sample Writer","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"sample_writer","display_name":"Sample Writer","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 
 insert into public.articles (id, author_id, slug, title, dek, category, content_type, body_json, status, submitted_at, published_at) values
   ('5eed0000-0000-4000-8000-0000000000a1', '5eed0000-0000-4000-8000-000000000001',

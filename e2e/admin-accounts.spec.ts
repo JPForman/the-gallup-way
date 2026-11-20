@@ -1,14 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { newSignedInUser } from "./helpers/auth";
-import { sql, userIdByEmail } from "./helpers/db";
+import { ACCEPTED_SIGNUP, sql, userIdByEmail } from "./helpers/db";
 import { gotoReady } from "./helpers/page";
 
 async function member(prefix: string) {
   const id = randomUUID();
   const tag = id.slice(0, 8);
   await sql`insert into auth.users (id, email, raw_user_meta_data) values (${id}, ${`${prefix}-${tag}@example.invalid`},
-    ${sql.json({ handle: `${prefix}_${tag}`, display_name: `${prefix} ${tag}`, age_confirmed: true, accepted_terms_version: 1, accepted_privacy_version: 1 })})`;
+    ${sql.json({ handle: `${prefix}_${tag}`, display_name: `${prefix} ${tag}`, ...ACCEPTED_SIGNUP })})`;
   return { id, name: `${prefix} ${tag}` };
 }
 

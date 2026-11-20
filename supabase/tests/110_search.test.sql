@@ -9,13 +9,13 @@ delete from auth.users where id::text like '5a5a0000-%';
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('adad0000-0000-0000-0000-000000000001', 'rosa@test.local',
-   '{"handle":"rosa_y","display_name":"Rosa Yazzie","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"rosa_y","display_name":"Rosa Yazzie","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('adad0000-0000-0000-0000-000000000002', 'ros@test.local',
-   '{"handle":"ros","display_name":"Ros Begay","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"ros","display_name":"Ros Begay","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('adad0000-0000-0000-0000-000000000003', 'amb@test.local',
-   '{"handle":"ambrose_k","display_name":"Ambrose Kee","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"ambrose_k","display_name":"Ambrose Kee","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('adad0000-0000-0000-0000-000000000004', 'pct@test.local',
-   '{"handle":"pct_user","display_name":"100% Local","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"pct_user","display_name":"100% Local","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 
 create function pg_temp.doc(t text) returns jsonb language sql as $$
   select jsonb_build_object('type', 'doc', 'content', jsonb_build_array(jsonb_build_object(

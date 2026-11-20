@@ -7,7 +7,7 @@ delete from public.articles;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('abab0000-0000-0000-0000-000000000001', 'feed@test.local',
-   '{"handle":"feedtest","display_name":"Feed Writer","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"feedtest","display_name":"Feed Writer","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 
 -- 25 published stories one hour apart (s01 oldest ... s25 newest), two sharing
 -- a timestamp, plus a draft, a pending story and a deleted story.

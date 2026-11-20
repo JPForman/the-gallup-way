@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { newSignedInUser } from "./helpers/auth";
-import { sql, userIdByEmail } from "./helpers/db";
+import { ACCEPTED_SIGNUP, sql, userIdByEmail } from "./helpers/db";
 import { gotoReady } from "./helpers/page";
 import { storyByAnotherAuthor } from "./helpers/stories";
 
@@ -104,6 +104,6 @@ function randomReporter() {
   return {
     id,
     email: `reporter-${tag}@example.invalid`,
-    meta: { handle: `rep_${tag}`, display_name: "Reporter", age_confirmed: true, accepted_terms_version: 1, accepted_privacy_version: 1 },
+    meta: { handle: `rep_${tag}`, display_name: "Reporter", ...ACCEPTED_SIGNUP },
   };
 }

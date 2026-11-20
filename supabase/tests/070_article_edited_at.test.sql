@@ -4,7 +4,7 @@ select plan(6);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('ffffffff-0000-0000-0000-000000000001', 'ed@test.local',
-   '{"handle":"edtest","display_name":"Ed","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"edtest","display_name":"Ed","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at) values
   ('ffffffff-0000-0000-0000-0000000000a1', 'ffffffff-0000-0000-0000-000000000001', 'live-ffffff',

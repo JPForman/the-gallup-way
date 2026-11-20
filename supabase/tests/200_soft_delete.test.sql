@@ -6,11 +6,11 @@ delete from public.articles;
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('b2b20000-0000-0000-0000-000000000001', 'sd1@test.local',
-   '{"handle":"sdauthor","display_name":"SD Author","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"sdauthor","display_name":"SD Author","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('b2b20000-0000-0000-0000-000000000002', 'sd2@test.local',
-   '{"handle":"sdother","display_name":"SD Other","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}'),
+   '{"handle":"sdother","display_name":"SD Other","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}'),
   ('b2b20000-0000-0000-0000-000000000003', 'sd3@test.local',
-   '{"handle":"sdmod","display_name":"SD Mod","age_confirmed":true,"accepted_terms_version":1,"accepted_privacy_version":1}');
+   '{"handle":"sdmod","display_name":"SD Mod","age_confirmed":true,"accepted_terms_version":2,"accepted_privacy_version":2}');
 update public.profiles set role = 'moderator' where handle = 'sdmod';
 
 insert into public.articles (id, author_id, slug, title, category, body_json, status, submitted_at, published_at) values
