@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 6.2.** Push `20261123000000_moderation.sql` and `20261123000100_moderation_log_fk_nulls.sql` before merging 6.1 (6.2 has no migration); check the dry run says "Remote database is up to date" before merging. Local: 379 pgTAP checks, 185 unit tests, 144 Playwright tests (2 desktop-only).
-- **Next: 6.3 `/admin` dashboard** (staff only: server-side `is_staff()` check, 404 otherwise; dynamic, noindex). Stat tiles: open reports (high first), pending stories, new users this week. Tabs: Reports (open, priority then age, grouped by item with reasons/details), Pending review, New users, Log (`moderation_actions`). Item drawer: content preview, author history, prior actions, buttons calling the 6.1 staff RPCs with a required reason; revalidate public pages after hide/restore/approve. Server Actions are fine here (staff-only, low volume). Needs a staff-readable view of reports with target summaries (maybe a DEFINER `admin_report_queue()` / `admin_stats()` RPC). Unit + e2e with a seeded moderator.
+- **Done through 6.3.** Push `20261123000000_moderation.sql` + `20261123000100_moderation_log_fk_nulls.sql` (6.1) and `20261123010000_admin_queue.sql` (6.3) before merging those PRs; 6.2 has no migration. Check the dry run says "Remote database is up to date" before merging. Local: 390 pgTAP checks, 189 unit tests, 150 Playwright tests (5 desktop-only).
+- **Next: 6.4 account actions + roles + categories.** `/admin/users/[id]` (staff): profile, account status, stories, reports against them, staff history, notes (`add_staff_note`). Suspend 7/30 days or until a date, unsuspend, ban (`staff_user_action`); admins also change roles (`set_user_role`). Link from the New users tab, report queue (profile reports) and story review page. Category management: decide whether categories stay in `src/lib/site.ts` (code) or move to a table editable by admins (categories table exists; check what reads it). Unit + e2e.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -56,7 +56,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 ## Phase 6 — Safety and admin
 - [x] 6.1 Migration: `reports` (priority), `moderation_actions`, staff action SQL functions; pgTAP
 - [x] 6.2 Report button/dialog on articles, comments, profiles
-- [ ] 6.3 `/admin` dashboard: stat tiles, Reports / Pending / New users / Log tabs, item drawer with actions
+- [x] 6.3 `/admin` dashboard: stat tiles, Reports / Pending / New users / Log tabs, story review page with actions (a page instead of a drawer)
 - [ ] 6.4 Suspend/ban, role change (admin), category management
 - [ ] 6.5 Soft delete + restore; revision history view for staff
 - [ ] 6.6 Account deletion (anonymize or delete) + e2e

@@ -7,11 +7,11 @@ import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { clientIp, hashIp } from "@/lib/auth/ip-hash";
 import { ARTICLE_IMAGE_BUCKET, type SaveArticleResult } from "@/lib/db/articles";
 import { fieldErrorsOf, type FormState } from "@/lib/forms/state";
-import { CATEGORIES } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import type { Database, Json } from "@/lib/supabase/types";
 import { parseArticleForm, publishProblems } from "@/lib/validation/article";
 import { parseCorrectionForm } from "@/lib/validation/correction";
+import { revalidatePublicPages } from "@/lib/revalidate";
 
 type Client = SupabaseClient<Database>;
 
@@ -37,19 +37,6 @@ function submitErrorMessage(error: PostgrestError): string {
   return "We couldn't publish your story. Please try again.";
 }
 
-/**
- * Refresh the cached public pages a published story appears on. All category
- * pages are refreshed, since an edit may have moved the story to another one.
- */
-function revalidatePublicPages(slug: string | null) {
-  revalidatePath("/");
-  revalidatePath("/latest");
-  for (const c of CATEGORIES) revalidatePath(`/c/${c.slug}`);
-  if (slug) revalidatePath(`/a/${slug}`);
-  // Profile pages list the writer's stories and stats.
-  revalidatePath("/u/[handle]", "page");
-  revalidatePath("/u/[handle]/stories/[cursor]", "page");
-}
 
 /** Notices the edit page can show after a redirect (see EDIT_NOTICES). */
 export type EditNotice = "saved" | "review" | "published" | "withdrawn" | "publish-failed";
