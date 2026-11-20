@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
-import { deleteDraft } from "@/app/write/actions";
+import { deleteDraft, deleteStory } from "@/app/write/actions";
 
 function ConfirmButton() {
   const { pending } = useFormStatus();
@@ -14,18 +14,21 @@ function ConfirmButton() {
   );
 }
 
-/** Two-step delete so a stray tap doesn't lose a draft. */
-export function DeleteDraftButton({ articleId }: { articleId: string }) {
+/**
+ * Two-step delete so a stray tap doesn't lose work. `draft` permanently
+ * deletes an unsubmitted draft; `story` soft-deletes a submitted story.
+ */
+export function DeleteDraftButton({ articleId, kind = "draft" }: { articleId: string; kind?: "draft" | "story" }) {
   const [confirming, setConfirming] = useState(false);
   if (!confirming) {
     return (
       <Button type="button" variant="outline" className="h-11" onClick={() => setConfirming(true)}>
-        Delete draft
+        {kind === "draft" ? "Delete draft" : "Delete story"}
       </Button>
     );
   }
   return (
-    <form action={deleteDraft} className="flex flex-wrap gap-2">
+    <form action={kind === "draft" ? deleteDraft : deleteStory} className="flex flex-wrap gap-2">
       <input type="hidden" name="articleId" value={articleId} />
       <ConfirmButton />
       <Button type="button" variant="ghost" className="h-11" onClick={() => setConfirming(false)}>

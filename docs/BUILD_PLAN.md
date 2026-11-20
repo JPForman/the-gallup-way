@@ -3,8 +3,8 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 6.4.** Push `20261123020000_admin_user.sql` before merging 6.4; check the dry run (run it from the PR's branch) says "Remote database is up to date" before merging. Local: 394 pgTAP checks, 192 unit tests, 154 Playwright tests (7 desktop-only).
-- **Next: 6.5 soft delete + restore; revision history for staff.** Authors delete their own submitted stories (soft: `deleted_at` via a `delete_article` RPC; drops out everywhere, slug stays reserved). Staff restore deleted stories (`staff_article_action` gains `restore_deleted`, logged). Staff story page shows `article_revisions` (previous title/dek/body snapshots, already recorded since 3.x) with dates. Decide what authors see after deleting (gone from /me, or a \"Deleted\" list). pgTAP + unit + e2e.
+- **Done through 6.5.** Push `20261124000000_soft_delete.sql` before merging 6.5; check the dry run (from the PR's branch) says "Remote database is up to date" before merging. Local: 405 pgTAP checks, 192 unit tests, 156 Playwright tests (8 desktop-only).
+- **Next: 6.6 account deletion** (finishes Phase 6). Settings → Delete account: choose \"anonymize\" (keep published stories as \"Former member\", remove profile details, avatar, follows, likes, bookmarks) or \"delete\" (also soft-delete their stories and remove their comment text). Needs the service-role key server-side to delete the `auth.users` row: a Route Handler/Server Action that verifies the caller is deleting themselves (password re-entry or recent sign-in), then calls a SECURITY DEFINER cleanup function and `auth.admin.deleteUser`. Owner adds `SUPABASE_SERVICE_ROLE_KEY` to Vercel (server-only). Check every FK's on-delete behaviour (profiles cascade vs set null) in pgTAP. e2e.
 - **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
 
 ## Phase 1 — Foundation
@@ -58,7 +58,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 6.2 Report button/dialog on articles, comments, profiles
 - [x] 6.3 `/admin` dashboard: stat tiles, Reports / Pending / New users / Log tabs, story review page with actions (a page instead of a drawer)
 - [x] 6.4 Suspend/ban, role change (admin), notes; categories stay in code (no admin UI needed for ~6 categories)
-- [ ] 6.5 Soft delete + restore; revision history view for staff
+- [x] 6.5 Soft delete + restore; revision history view for staff
 - [ ] 6.6 Account deletion (anonymize or delete) + e2e
 
 ## Phase 7 — Legal and launch prep

@@ -9,7 +9,15 @@ export const modReasonSchema = z
   .min(1, "Give a reason. It goes in the moderation log.")
   .max(MOD_REASON_MAX, `Keep the reason to ${MOD_REASON_MAX} characters.`);
 
-export const ARTICLE_ACTIONS = ["hide", "restore", "approve", "reject", "lock_comments", "unlock_comments"] as const;
+export const ARTICLE_ACTIONS = [
+  "hide",
+  "restore",
+  "approve",
+  "reject",
+  "lock_comments",
+  "unlock_comments",
+  "restore_deleted",
+] as const;
 export const COMMENT_ACTIONS = ["remove", "restore"] as const;
 export const USER_ACTIONS = ["suspend_7", "suspend_30", "unsuspend", "ban"] as const;
 export const ROLES = ["user", "moderator", "admin"] as const;

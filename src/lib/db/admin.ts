@@ -32,6 +32,7 @@ export type LogEntry = {
 export const ACTION_LABELS: Record<ModerationKind, string> = {
   hide_article: "Hid story",
   restore_article: "Restored story",
+  restore_deleted_article: "Undeleted story",
   approve_article: "Approved story",
   reject_article: "Sent story back to draft",
   lock_comments: "Locked comments",
@@ -203,4 +204,26 @@ export function accountStatus(suspendedUntil: string | null, now = new Date()): 
   if (!suspendedUntil) return "active";
   if (suspendedUntil === "infinity") return "banned";
   return new Date(suspendedUntil) > now ? "suspended" : "active";
+}
+
+export type Revision = {
+  id: number;
+  title: string;
+  dek: string | null;
+  body_json: unknown;
+  created_at: string;
+  editor: { handle: string; display_name: string } | null;
+};
+
+/** Earlier versions of a story, newest first (each row is what an edit replaced). */
+export async function listRevisions(client: Client, articleId: string): Promise<Revision[]> {
+  const { data, error } = await client
+    .from("article_revisions")
+    .select("id, title, dek, body_json, created_at, editor:profiles!article_revisions_edited_by_fkey (handle, display_name)")
+    .eq("article_id", articleId)
+    .order("id", { ascending: false })
+    .limit(50)
+    .returns<Revision[]>();
+  if (error) throw error;
+  return data;
 }

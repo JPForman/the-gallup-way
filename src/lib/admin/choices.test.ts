@@ -12,6 +12,9 @@ describe("articleChoices", () => {
     expect(actions("published", true)).toEqual(["hide", "unlock_comments"]);
     expect(actions("hidden")).toEqual(["restore"]);
     expect(actions("draft")).toEqual([]);
+    expect(articleChoices({ status: "published", comments_locked: false, deleted_at: "2026-11-20T00:00:00Z" }).map((c) => c.action)).toEqual([
+      "restore_deleted",
+    ]);
   });
 });
 

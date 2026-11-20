@@ -218,3 +218,23 @@ export async function deleteDraft(formData: FormData): Promise<void> {
   revalidatePath("/write");
   redirect(deleted?.length ? "/write?deleted=1" : `/edit/${id}`);
 }
+
+/**
+ * Delete a submitted story (pending, published or hidden). It's a soft
+ * delete: the story leaves the site, and staff can restore it on request.
+ */
+export async function deleteStory(formData: FormData): Promise<void> {
+  const id = String(formData.get("articleId") ?? "");
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) redirect(`/auth/sign-in?next=/edit/${encodeURIComponent(id)}`);
+
+  // Read the slug first: afterwards the author can't see the story.
+  const { data: before } = await supabase.from("articles").select("slug").eq("id", id).maybeSingle();
+  const { data: deleted } = await supabase.rpc("delete_article", { p_article_id: id });
+  if (!deleted) redirect(`/edit/${id}`);
+
+  revalidatePublicPages(before?.slug ?? null);
+  revalidatePath("/write");
+  redirect("/write?deleted=story");
+}
