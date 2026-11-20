@@ -17,5 +17,5 @@ export async function storyByAnotherAuthor(prefix = "story") {
       '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Story text."}]}]}',
       'published', now(), now())
     returning id`;
-  return { slug, id: row!.id };
+  return { slug, id: row!.id, authorId, authorHandle: `author_${tag}` };
 }

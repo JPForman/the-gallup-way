@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/avatar";
+import { FollowButton } from "@/components/follow-button";
 import { avatarUrl, getProfileByHandle } from "@/lib/db/profiles";
 import { SITE_TIMEZONE } from "@/lib/site";
 import { createPublicClient } from "@/lib/supabase/public";
@@ -58,6 +59,15 @@ export default async function ProfilePage({ params }: Props) {
         </div>
         <OwnProfileActions profileId={profile.id} />
       </header>
+
+      <div className="mt-4">
+        <FollowButton
+          profileId={profile.id}
+          name={profile.display_name}
+          signInNext={`/u/${profile.handle}`}
+          showCounts
+        />
+      </div>
 
       {profile.bio ? (
         <p className="mt-6 max-w-prose leading-relaxed whitespace-pre-line">{profile.bio}</p>

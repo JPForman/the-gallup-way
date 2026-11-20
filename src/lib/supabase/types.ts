@@ -428,6 +428,39 @@ export type Database = {
           },
         ]
       }
+      follows: {
+        Row: {
+          created_at: string
+          followee_id: string
+          follower_id: string
+        }
+        Insert: {
+          created_at?: string
+          followee_id: string
+          follower_id?: string
+        }
+        Update: {
+          created_at?: string
+          followee_id?: string
+          follower_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follows_followee_id_fkey"
+            columns: ["followee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age_confirmed_at: string | null
@@ -542,6 +575,27 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       delete_comment: { Args: { p_comment_id: number }; Returns: boolean }
+      feed_following: {
+        Args: {
+          p_before_id?: string
+          p_before_published_at?: string
+          p_limit?: number
+        }
+        Returns: {
+          author_display_name: string
+          author_handle: string
+          category: string
+          content_type: Database["public"]["Enums"]["content_type"]
+          dek: string
+          excerpt: string
+          id: string
+          image_alt: string
+          image_path: string
+          published_at: string
+          slug: string
+          title: string
+        }[]
+      }
       feed_latest: {
         Args: {
           p_before_id?: string
@@ -562,6 +616,15 @@ export type Database = {
           published_at: string
           slug: string
           title: string
+        }[]
+      }
+      follow_context: {
+        Args: { p_profile_id: string }
+        Returns: {
+          can_follow: boolean
+          followers: number
+          following: number
+          is_following: boolean
         }[]
       }
       has_accepted_current: {

@@ -4,6 +4,8 @@ select plan(17);
 
 -- Start from no stories (seed.sql and local e2e runs add some); rolled back at the end.
 delete from public.articles;
+-- Local sample writers (pnpm db:samples) would match the profile searches; rolled back.
+delete from auth.users where id::text like '5a5a0000-%';
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('adad0000-0000-0000-0000-000000000001', 'rosa@test.local',
