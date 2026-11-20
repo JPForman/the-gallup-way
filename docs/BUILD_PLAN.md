@@ -3,9 +3,9 @@
 One step = one PR with tests; CI green before merge. Check items off as they land.
 
 ## Current status (update at the end of each session)
-- **Done through 6.5.** Push `20261124000000_soft_delete.sql` before merging 6.5; check the dry run (from the PR's branch) says "Remote database is up to date" before merging. Local: 405 pgTAP checks, 192 unit tests, 156 Playwright tests (8 desktop-only).
-- **Next: 6.6 account deletion** (finishes Phase 6). Settings → Delete account: choose \"anonymize\" (keep published stories as \"Former member\", remove profile details, avatar, follows, likes, bookmarks) or \"delete\" (also soft-delete their stories and remove their comment text). Needs the service-role key server-side to delete the `auth.users` row: a Route Handler/Server Action that verifies the caller is deleting themselves (password re-entry or recent sign-in), then calls a SECURITY DEFINER cleanup function and `auth.admin.deleteUser`. Owner adds `SUPABASE_SERVICE_ROLE_KEY` to Vercel (server-only). Check every FK's on-delete behaviour (profiles cascade vs set null) in pgTAP. e2e.
-- **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then).
+- **Done through 6.6 (Phase 6 complete).** Before merging 6.6: push `20261125000000_account_deletion.sql` and add `SUPABASE_SERVICE_ROLE_KEY` to Vercel (Production + Preview, not exposed to the browser). Check the dry run says "Remote database is up to date". Local: 419 pgTAP checks, 193 unit tests, 162 Playwright tests (8 desktop-only).
+- **Next: Phase 7 (legal and launch prep)**, starting with 7.1 (see the Phase 7 list below).
+- **Owner to-dos:** 2.4 Resend SMTP needs a domain (cloud mailer sends ~2 emails/hour until then). Add `SUPABASE_SERVICE_ROLE_KEY` to Vercel for account deletion (6.6).
 
 ## Phase 1 — Foundation
 - [x] 1.1 `git init`, scaffold Next.js (App Router, TS strict, Tailwind, ESLint), pnpm, `images.unoptimized`, `src/lib/site.ts`
@@ -59,7 +59,7 @@ One step = one PR with tests; CI green before merge. Check items off as they lan
 - [x] 6.3 `/admin` dashboard: stat tiles, Reports / Pending / New users / Log tabs, story review page with actions (a page instead of a drawer)
 - [x] 6.4 Suspend/ban, role change (admin), notes; categories stay in code (no admin UI needed for ~6 categories)
 - [x] 6.5 Soft delete + restore; revision history view for staff
-- [ ] 6.6 Account deletion (anonymize or delete) + e2e
+- [x] 6.6 Account deletion (anonymize or delete) + e2e
 
 ## Phase 7 — Legal and launch prep
 - [ ] 7.1 Final legal pages (Terms, Privacy, Guidelines, Contributor Agreement, Corrections, DMCA, Contact) — lawyer review recommended
