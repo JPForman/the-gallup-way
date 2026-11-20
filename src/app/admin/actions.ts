@@ -10,6 +10,7 @@ import { SUSPEND_DAYS, parseModerationForm } from "@/lib/validation/moderation";
 const DONE: Record<string, string> = {
   hide: "Story hidden.",
   restore: "Restored.",
+  restore_deleted: "Story undeleted.",
   approve: "Story approved and published.",
   reject: "Story sent back to the author as a draft.",
   lock_comments: "Comments locked.",

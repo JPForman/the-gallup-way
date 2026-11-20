@@ -1,7 +1,8 @@
 export type ActionChoice = { action: string; label: string; tone?: "danger" | "default" };
 
 /** Which buttons a story in this state offers. */
-export function articleChoices(a: { status: string; comments_locked: boolean }): ActionChoice[] {
+export function articleChoices(a: { status: string; comments_locked: boolean; deleted_at?: string | null }): ActionChoice[] {
+  if (a.deleted_at) return [{ action: "restore_deleted", label: "Undelete story" }];
   const out: ActionChoice[] = [];
   if (a.status === "pending_review") {
     out.push({ action: "approve", label: "Approve and publish" }, { action: "reject", label: "Send back to draft" });

@@ -847,6 +847,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      delete_article: { Args: { p_article_id: string }; Returns: boolean }
       delete_comment: { Args: { p_comment_id: number }; Returns: boolean }
       dismiss_report: {
         Args: { p_reason: string; p_report_id: number }
@@ -1147,6 +1148,7 @@ export type Database = {
         | "change_role"
         | "dismiss_report"
         | "note"
+        | "restore_deleted_article"
       reaction_kind: "like" | "dislike"
       report_reason:
         | "defamation"
@@ -1319,6 +1321,7 @@ export const Constants = {
         "change_role",
         "dismiss_report",
         "note",
+        "restore_deleted_article",
       ],
       reaction_kind: ["like", "dislike"],
       report_reason: [

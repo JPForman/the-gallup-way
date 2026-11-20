@@ -5,7 +5,7 @@ import { ModerationLog } from "@/components/admin/moderation-log";
 import { Time } from "@/components/admin/time";
 import { requireStaff } from "@/lib/admin/auth";
 import { articleChoices } from "@/lib/admin/choices";
-import { REASON_LABELS, getAdminArticle, listModerationLog } from "@/lib/db/admin";
+import { REASON_LABELS, getAdminArticle, listModerationLog, listRevisions } from "@/lib/db/admin";
 import { RichText } from "@/lib/richtext";
 
 export const metadata = { title: "Review story" };
@@ -27,9 +27,12 @@ export default async function AdminArticlePage({ params }: { params: Promise<{ i
   const found = await getAdminArticle(supabase, id);
   if (!found) notFound();
   const { article, reports } = found;
-  const log = await listModerationLog(supabase, { articleId: id, limit: 50 });
+  const [log, revisions] = await Promise.all([
+    listModerationLog(supabase, { articleId: id, limit: 50 }),
+    listRevisions(supabase, id),
+  ]);
   const openReports = reports.filter((r) => r.status === "open");
-  const choices = article.deleted_at ? [] : articleChoices(article);
+  const choices = articleChoices(article);
 
   return (
     <main className="space-y-8">
@@ -86,7 +89,9 @@ export default async function AdminArticlePage({ params }: { params: Promise<{ i
             Actions
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Staff hide, restore, approve or reject stories. We never edit what a member wrote.
+            {article.deleted_at
+              ? "The author deleted this story. Undelete it only if they ask, or if it's needed for a dispute."
+              : "Staff hide, restore, approve or reject stories. We never edit what a member wrote."}
           </p>
           <div className="mt-4">
             <ActionForm kind="article" id={article.id} reportId={openReports[0]?.id} choices={choices} />
@@ -123,6 +128,39 @@ export default async function AdminArticlePage({ params }: { params: Promise<{ i
           {article.dek ? <p className="text-lg text-muted-foreground">{article.dek}</p> : null}
           <RichText doc={article.body_json} className="mt-4" />
         </div>
+      </section>
+
+      <section aria-labelledby="revisions-heading">
+        <h2 id="revisions-heading" className="font-serif text-xl font-semibold">
+          Earlier versions ({revisions.length})
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Saved automatically whenever the author edits the story after it was published. Each entry is the version
+          that edit replaced.
+        </p>
+        {revisions.length ? (
+          <ol className="mt-3 space-y-3">
+            {revisions.map((r) => (
+              <li key={r.id} className="rounded-md border border-border">
+                <details>
+                  <summary className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-2 p-4">
+                    <span className="font-medium break-words">{r.title}</span>
+                    <span className="text-sm text-muted-foreground">
+                      replaced <Time iso={r.created_at} />
+                      {r.editor ? ` by @${r.editor.handle}` : ""}
+                    </span>
+                  </summary>
+                  <div className="border-t border-border p-4">
+                    {r.dek ? <p className="text-muted-foreground">{r.dek}</p> : null}
+                    <RichText doc={r.body_json} className="mt-3" />
+                  </div>
+                </details>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="mt-3 text-muted-foreground">No edits since publishing.</p>
+        )}
       </section>
 
       <section aria-labelledby="history-heading">

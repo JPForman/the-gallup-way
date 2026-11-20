@@ -70,6 +70,8 @@ export default async function EditPage({
   const status = article.status;
   const editable = status === "draft" || status === "pending_review" || status === "published";
   const canDelete = status === "draft" && !article.submitted_at;
+  // Submitted stories (pending, published, hidden) are soft-deleted instead.
+  const canSoftDelete = !canDelete && !!article.submitted_at;
   // Notices that change the page (publish, withdraw) are shown above the form;
   // the "saved" notice is the form's own initial message.
   const topNotice = isNotice(notice) && notice !== "saved" ? EDIT_NOTICES[notice] : null;
@@ -164,6 +166,21 @@ export default async function EditPage({
           </p>
           <div className="mt-4">
             <DeleteDraftButton articleId={article.id} />
+          </div>
+        </section>
+      ) : null}
+
+      {canSoftDelete ? (
+        <section aria-labelledby="delete-story-heading" className="mt-12 border-t border-border pt-8">
+          <h2 id="delete-story-heading" className="font-serif text-xl font-semibold">
+            Delete story
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Removes the story from the site and from your list. Copies others made may still exist. If you change your
+            mind, ask us through the Contact page and a moderator can bring it back.
+          </p>
+          <div className="mt-4">
+            <DeleteDraftButton articleId={article.id} kind="story" />
           </div>
         </section>
       ) : null}

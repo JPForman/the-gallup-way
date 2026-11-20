@@ -40,7 +40,10 @@ export default async function WritePage({
 
       {params.deleted ? (
         <div className="mt-6">
-          <FormMessage status="success" message="Draft deleted." />
+          <FormMessage
+            status="success"
+            message={params.deleted === "story" ? "Story deleted. It's no longer on the site." : "Draft deleted."}
+          />
         </div>
       ) : null}
 
