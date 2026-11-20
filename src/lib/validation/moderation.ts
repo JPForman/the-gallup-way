@@ -11,6 +11,8 @@ export const modReasonSchema = z
 
 export const ARTICLE_ACTIONS = ["hide", "restore", "approve", "reject", "lock_comments", "unlock_comments"] as const;
 export const COMMENT_ACTIONS = ["remove", "restore"] as const;
+export const USER_ACTIONS = ["suspend_7", "suspend_30", "unsuspend", "ban"] as const;
+export const ROLES = ["user", "moderator", "admin"] as const;
 
 export const moderationFormSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -33,7 +35,30 @@ export const moderationFormSchema = z.discriminatedUnion("kind", [
     action: z.literal("dismiss"),
     reason: modReasonSchema,
   }),
+  z.object({
+    kind: z.literal("user"),
+    id: z.uuid(),
+    action: z.enum(USER_ACTIONS),
+    reason: modReasonSchema,
+    reportId: z.coerce.number().int().positive().optional(),
+  }),
+  z.object({
+    kind: z.literal("role"),
+    id: z.uuid(),
+    action: z.literal("set_role"),
+    role: z.enum(ROLES, { error: "Choose a role." }),
+    reason: modReasonSchema,
+  }),
+  z.object({
+    kind: z.literal("note"),
+    id: z.uuid(),
+    action: z.literal("note"),
+    reason: modReasonSchema,
+  }),
 ]);
+
+/** Suspension lengths offered on the account page. */
+export const SUSPEND_DAYS = { suspend_7: 7, suspend_30: 30 } as const;
 
 export type ModerationForm = z.infer<typeof moderationFormSchema>;
 
@@ -49,5 +74,6 @@ export function parseModerationForm(formData: FormData) {
     action: get("action"),
     reason: get("reason") ?? "",
     reportId: get("reportId"),
+    role: get("role"),
   });
 }

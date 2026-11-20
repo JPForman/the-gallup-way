@@ -93,10 +93,14 @@ const LOG_COLUMNS =
   "target:profiles!moderation_actions_profile_id_fkey (handle, display_name), " +
   "article:articles (title, slug)";
 
-/** The moderation log, newest first; optionally for one story. */
-export async function listModerationLog(client: Client, opts: { articleId?: string; limit?: number } = {}): Promise<LogEntry[]> {
+/** The moderation log, newest first; optionally for one story or one account. */
+export async function listModerationLog(
+  client: Client,
+  opts: { articleId?: string; profileId?: string; limit?: number } = {},
+): Promise<LogEntry[]> {
   let q = client.from("moderation_actions").select(LOG_COLUMNS).order("id", { ascending: false }).limit(opts.limit ?? 100);
   if (opts.articleId) q = q.eq("article_id", opts.articleId);
+  if (opts.profileId) q = q.eq("profile_id", opts.profileId);
   const { data, error } = await q.returns<LogEntry[]>();
   if (error) throw error;
   return data;
@@ -150,4 +154,53 @@ export async function getAdminArticle(
     .returns<AdminReport[]>();
   if (reportError) throw reportError;
   return { article, reports };
+}
+
+export type AdminUser = Fn<"admin_user">[number];
+
+export type AdminUserStory = {
+  id: string;
+  title: string;
+  status: Database["public"]["Enums"]["article_status"];
+  slug: string | null;
+  updated_at: string;
+};
+
+/** One account with its submitted stories and the reports filed against the profile. */
+export async function getAdminUser(
+  client: Client,
+  id: string,
+): Promise<{ user: AdminUser; stories: AdminUserStory[]; reports: AdminReport[] } | null> {
+  const { data, error } = await client.rpc("admin_user", { p_profile_id: id });
+  if (error) throw error;
+  const user = data[0];
+  if (!user) return null;
+  const [{ data: stories, error: storyError }, { data: reports, error: reportError }] = await Promise.all([
+    client
+      .from("articles")
+      .select("id, title, status, slug, updated_at")
+      .eq("author_id", id)
+      .is("deleted_at", null)
+      .not("submitted_at", "is", null)
+      .order("updated_at", { ascending: false })
+      .limit(50)
+      .returns<AdminUserStory[]>(),
+    client
+      .from("reports")
+      .select("id, reason, details, priority, status, created_at")
+      .eq("profile_id", id)
+      .order("created_at", { ascending: false })
+      .limit(50)
+      .returns<AdminReport[]>(),
+  ]);
+  if (storyError) throw storyError;
+  if (reportError) throw reportError;
+  return { user, stories, reports };
+}
+
+/** "Active", "Suspended until …" or "Banned". */
+export function accountStatus(suspendedUntil: string | null, now = new Date()): "active" | "suspended" | "banned" {
+  if (!suspendedUntil) return "active";
+  if (suspendedUntil === "infinity") return "banned";
+  return new Date(suspendedUntil) > now ? "suspended" : "active";
 }

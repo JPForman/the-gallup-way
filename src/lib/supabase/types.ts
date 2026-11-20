@@ -790,6 +790,24 @@ export type Database = {
           pending_stories: number
         }[]
       }
+      admin_user: {
+        Args: { p_profile_id: string }
+        Returns: {
+          approved_article_count: number
+          bio: string
+          comments: number
+          created_at: string
+          display_name: string
+          handle: string
+          hidden: number
+          id: string
+          open_reports: number
+          pending: number
+          published: number
+          role: Database["public"]["Enums"]["user_role"]
+          suspended_until: string
+        }[]
+      }
       article_engagement: {
         Args: { p_article_id: string }
         Returns: {

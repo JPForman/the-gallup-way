@@ -160,8 +160,13 @@ function Reports({ groups }: { groups: ReportGroup[] }) {
                 choices={[{ action: "remove", label: "Remove comment", tone: "danger" }]}
               />
             ) : null}
-            {g.target_type === "profile" ? (
-              <p className="text-sm text-muted-foreground">Account actions (suspend, ban) arrive in the next update.</p>
+            {g.target_type === "profile" && g.profile_id ? (
+              <Link
+                href={`/admin/users/${g.profile_id}`}
+                className="inline-flex min-h-11 items-center rounded-md border border-border px-4 font-medium hover:bg-muted"
+              >
+                Review account
+              </Link>
             ) : null}
             <details>
               <summary className="cursor-pointer text-sm font-medium">Dismiss {g.report_count === 1 ? "report" : "reports"}</summary>
@@ -235,7 +240,7 @@ function Users({ users }: { users: Awaited<ReturnType<typeof listNewUsers>> }) {
             return (
               <tr key={u.id}>
                 <td className="p-3">
-                  <Link href={`/u/${u.handle}`} className="font-medium underline-offset-4 hover:underline">
+                  <Link href={`/admin/users/${u.id}`} className="font-medium underline-offset-4 hover:underline">
                     {u.display_name}
                   </Link>
                   <span className="block text-muted-foreground">@{u.handle}</span>
