@@ -18,7 +18,7 @@ export const OPERATOR: {
   /** DMCA designated agent, exactly as registered at copyright.gov (step 7.2). */
   dmcaAgent: { name: string; address: string; email: string; phone?: string } | null;
 } = {
-  contactEmail: null,
+  contactEmail: "TheGallupWay@gmail.com",
   dmcaAgent: null,
 };
 
